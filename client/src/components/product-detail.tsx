@@ -267,9 +267,8 @@ export function ProductDetail({ productId }: ProductDetailProps) {
           영양 정보
         </h3>
         
-        <Tabs defaultValue="per100g" className="mb-6">
+        <Tabs defaultValue="total" className="mb-6">
           <TabsList>
-            <TabsTrigger value="per100g">100g 당 영양성분</TabsTrigger>
             <TabsTrigger value="total">
               전체 영양성분 {product.description && product.description.includes('전체') && (
                 <span className="text-xs font-normal ml-1 opacity-80">
@@ -279,135 +278,8 @@ export function ProductDetail({ productId }: ProductDetailProps) {
                 </span>
               )}
             </TabsTrigger>
+            <TabsTrigger value="per100g">100g 당 영양성분</TabsTrigger>
           </TabsList>
-          
-          <TabsContent value="per100g">
-            <div className="mb-4 p-3 bg-pink-50 rounded-lg border border-pink-100 shadow-sm">
-              <p className="text-sm text-gray-700">
-                <span className="text-pink-700 font-semibold">※ 표준 기준:</span> 아래 영양성분은 100g 기준으로 표시됩니다. 대한민국 식품의약품안전처에서 제공하는 영양정보 표준 기준입니다.
-              </p>
-            </div>
-            
-            {/* Nutrition Highlights - 100g 당 */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white p-4 rounded-lg text-center shadow-sm border border-pink-100">
-                <Flame className="h-5 w-5 mx-auto mb-1 text-primary" />
-                <span className="block text-2xl font-bold text-primary">
-                  {product.calories !== null ? product.calories : '-'}
-                </span>
-                <span className="text-sm text-gray-500">칼로리 (kcal)</span>
-              </div>
-              <div className="bg-white p-4 rounded-lg text-center shadow-sm border border-green-100">
-                <span className="block text-2xl font-bold text-green-500">
-                  {product.protein !== null ? `${product.protein}g` : '-'}
-                </span>
-                <span className="text-sm text-gray-500">단백질</span>
-              </div>
-              <div className="bg-white p-4 rounded-lg text-center shadow-sm border border-blue-100">
-                <span className="block text-2xl font-bold text-blue-500">
-                  {product.carbs !== null ? `${product.carbs}g` : '-'}
-                </span>
-                <span className="text-sm text-gray-500">탄수화물</span>
-              </div>
-              <div className="bg-white p-4 rounded-lg text-center shadow-sm border border-yellow-100">
-                <span className="block text-2xl font-bold text-yellow-500">
-                  {product.fat !== null ? `${product.fat}g` : '-'}
-                </span>
-                <span className="text-sm text-gray-500">총 지방</span>
-              </div>
-            </div>
-            
-            {/* Detailed Nutritional Table - 100g 당 */}
-            <div className="overflow-x-auto rounded-lg border border-pink-100 shadow-sm bg-white">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-gradient-to-r from-pink-50 to-pink-100/60">
-                    <th className="py-3 px-4 text-left text-pink-800">영양소</th>
-                    <th className="py-3 px-4 text-right text-pink-800">함량 (100g 당)</th>
-                    <th className="py-3 px-4 text-right text-pink-800">일일 권장량 대비 (%)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-b border-pink-50 hover:bg-pink-50/30 transition-colors">
-                    <td className="py-3 px-4 font-medium text-gray-700">칼로리</td>
-                    <td className="py-3 px-4 text-right text-primary font-medium">
-                      {product.calories !== null ? `${product.calories} kcal` : '-'}
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      {product.calories !== null ? `${Math.round(product.calories / 2000 * 100)}%` : '-'}
-                    </td>
-                  </tr>
-                  <tr className="border-b border-pink-50 hover:bg-pink-50/30 transition-colors">
-                    <td className="py-3 px-4 font-medium text-gray-700">지방</td>
-                    <td className="py-3 px-4 text-right text-yellow-500 font-medium">
-                      {product.fat !== null ? `${product.fat}g` : '-'}
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      {product.fat !== null ? `${Math.round(product.fat / 65 * 100)}%` : '-'}
-                    </td>
-                  </tr>
-                  {product.saturatedFat !== null && (
-                    <tr className="border-b border-pink-50 hover:bg-pink-50/30 transition-colors">
-                      <td className="py-3 px-4 pl-8 text-gray-600">포화지방</td>
-                      <td className="py-3 px-4 text-right text-orange-400">
-                        {`${product.saturatedFat}g`}
-                      </td>
-                      <td className="py-3 px-4 text-right">
-                        {Math.round(product.saturatedFat / 20 * 100)}%
-                      </td>
-                    </tr>
-                  )}
-                  {product.transFat !== null && (
-                    <tr className="border-b border-pink-50 hover:bg-pink-50/30 transition-colors">
-                      <td className="py-3 px-4 pl-8 text-gray-600">트랜스지방</td>
-                      <td className="py-3 px-4 text-right text-orange-400">
-                        {`${product.transFat}g`}
-                      </td>
-                      <td className="py-3 px-4 text-right">-</td>
-                    </tr>
-                  )}
-                  <tr className="border-b border-pink-50 hover:bg-pink-50/30 transition-colors">
-                    <td className="py-3 px-4 font-medium text-gray-700">탄수화물</td>
-                    <td className="py-3 px-4 text-right text-blue-500 font-medium">
-                      {product.carbs !== null ? `${product.carbs}g` : '-'}
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      {product.carbs !== null ? `${Math.round(product.carbs / 300 * 100)}%` : '-'}
-                    </td>
-                  </tr>
-                  {product.sugar !== null && (
-                    <tr className="border-b border-pink-50 hover:bg-pink-50/30 transition-colors">
-                      <td className="py-3 px-4 pl-8 text-gray-600">당류</td>
-                      <td className="py-3 px-4 text-right">
-                        {`${product.sugar}g`}
-                      </td>
-                      <td className="py-3 px-4 text-right">-</td>
-                    </tr>
-                  )}
-                  <tr className="border-b border-pink-50 hover:bg-pink-50/30 transition-colors">
-                    <td className="py-3 px-4 font-medium text-gray-700">단백질</td>
-                    <td className="py-3 px-4 text-right text-green-500 font-medium">
-                      {product.protein !== null ? `${product.protein}g` : '-'}
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      {product.protein !== null ? `${Math.round(product.protein / 50 * 100)}%` : '-'}
-                    </td>
-                  </tr>
-                  {product.sodium !== null && (
-                    <tr className="border-b border-pink-50 hover:bg-pink-50/30 transition-colors">
-                      <td className="py-3 px-4 font-medium text-gray-700">나트륨</td>
-                      <td className="py-3 px-4 text-right">
-                        {`${product.sodium}mg`}
-                      </td>
-                      <td className="py-3 px-4 text-right">
-                        {Math.round(product.sodium / 2400 * 100)}%
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </TabsContent>
           
           <TabsContent value="total">
             {/* 제품 중량 정보 */}

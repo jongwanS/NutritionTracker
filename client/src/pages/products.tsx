@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { ProductList } from "@/components/product-list";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BannerAd, ResponsiveAd } from "@/components/ui/advertisement";
-import { useSearchParams } from "@/hooks/use-search-params";
 
 interface ProductsProps {
   params: {
@@ -16,13 +15,6 @@ interface ProductsProps {
 export default function Products({ params }: ProductsProps) {
   const franchiseId = parseInt(params.franchiseId);
   const queryClient = useQueryClient();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [activeFilters, setActiveFilters] = useState({
-    calorieRange: searchParams.get("calorieRange") || "",
-    proteinRange: searchParams.get("proteinRange") || "",
-    carbsRange: searchParams.get("carbsRange") || "",
-    fatRange: searchParams.get("fatRange") || ""
-  });
   
   // Fetch franchise details
   const { data: franchise, isLoading: franchiseLoading } = useQuery({
@@ -37,26 +29,10 @@ export default function Products({ params }: ProductsProps) {
     enabled: !!franchise?.categoryId,
   });
   
-  // 필터 변경 시 제품 쿼리 무효화 처리 및 필터 상태 업데이트
-  const handleFilterChange = (filters: {
-    calorieRange: string;
-    proteinRange: string;
-    carbsRange: string;
-    fatRange: string;
-  }) => {
-    console.log("필터 변경됨:", filters);
-    setActiveFilters(filters);
-    
+  // 필터 변경 시 제품 쿼리 무효화 처리
+  const handleFilterChange = () => {
     // 제품 쿼리를 무효화하여 새로운 필터로 다시 로드하게 함
-    queryClient.invalidateQueries({ 
-      queryKey: ['/api/products', { 
-        franchiseId,
-        calorieRange: filters.calorieRange,
-        proteinRange: filters.proteinRange,
-        carbsRange: filters.carbsRange,
-        fatRange: filters.fatRange
-      }] 
-    });
+    queryClient.invalidateQueries({ queryKey: ['/api/products', { franchiseId }] });
   };
   
   // Scroll to top on page load
@@ -87,7 +63,7 @@ export default function Products({ params }: ProductsProps) {
       
       <Breadcrumbs items={breadcrumbItems} />
       
-      <h1 className="text-3xl font-heading font-bold mb-2">
+      <h1 className="text-3xl font-heading font-bold mb-6">
         {franchiseLoading ? (
           <Skeleton className="h-9 w-64" />
         ) : (
@@ -95,19 +71,10 @@ export default function Products({ params }: ProductsProps) {
         )}
       </h1>
       
-      {/* 영양성분이 100g 기준임을 표시 */}
-      <p className="text-gray-500 text-sm mb-4 italic">
-        * 표시된 모든 영양성분 정보는 100g 기준입니다.
-      </p>
-      
       {/* 제품 목록 위 광고 배너 */}
       <BannerAd className="my-4" />
       
-      <ProductList 
-        franchiseId={franchiseId} 
-        // 필터 상태를 명시적으로 전달
-        filterParams={activeFilters}
-      />
+      <ProductList franchiseId={franchiseId} />
       
       {/* 제품 목록 아래 반응형 광고 */}
       <div className="mt-10">

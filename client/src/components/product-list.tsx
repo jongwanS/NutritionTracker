@@ -12,15 +12,9 @@ import { Heart, AlertCircle, Flame } from "lucide-react";
 
 interface ProductListProps {
   franchiseId: number;
-  filterParams?: {
-    calorieRange: string;
-    proteinRange: string;
-    carbsRange: string;
-    fatRange: string;
-  };
 }
 
-export function ProductList({ franchiseId, filterParams }: ProductListProps) {
+export function ProductList({ franchiseId }: ProductListProps) {
   const [, navigate] = useLocation();
   const [searchParams] = useSearchParams();
   const [favoriteProducts, setFavoriteProducts] = useState<number[]>([]);
@@ -59,13 +53,20 @@ export function ProductList({ franchiseId, filterParams }: ProductListProps) {
     };
   }, []);
   
-  // Get filter params from either props or URL
-  const calorieRange = filterParams?.calorieRange || searchParams.get("calorieRange") || "";
-  const proteinRange = filterParams?.proteinRange || searchParams.get("proteinRange") || "";
-  const carbsRange = filterParams?.carbsRange || searchParams.get("carbsRange") || "";
-  const fatRange = filterParams?.fatRange || searchParams.get("fatRange") || "";
+  // Get filter params from URL
+  const calorieRange = searchParams.get("calorieRange") || "";
+  const proteinRange = searchParams.get("proteinRange") || "";
+  const carbsRange = searchParams.get("carbsRange") || "";
+  const fatRange = searchParams.get("fatRange") || "";
   
-  console.log("사용 중인 필터:", { calorieRange, proteinRange, carbsRange, fatRange });
+  // Create query parameter string
+  const filterParams = new URLSearchParams();
+  filterParams.append("franchiseId", franchiseId.toString());
+  
+  if (calorieRange) filterParams.append("calorieRange", calorieRange);
+  if (proteinRange) filterParams.append("proteinRange", proteinRange);
+  if (carbsRange) filterParams.append("carbsRange", carbsRange);
+  if (fatRange) filterParams.append("fatRange", fatRange);
   
   // Fetch products by franchise with filters
   const { data: products, isLoading, error } = useQuery({
@@ -86,8 +87,6 @@ export function ProductList({ franchiseId, filterParams }: ProductListProps) {
           // 필터가 없으면 기본 제품 API 사용
           endpoint = `/api/products?franchiseId=${franchiseId}`;
         }
-        
-        console.log("API 요청 경로:", endpoint);
         
         const res = await fetch(endpoint);
         if (!res.ok) {
@@ -255,33 +254,28 @@ export function ProductList({ franchiseId, filterParams }: ProductListProps) {
             )}
             
             {/* 영양 정보 */}
-            <div className="flex flex-col gap-1 mt-auto">
-              <div className="text-center text-[10px] text-gray-500 italic mb-1">
-                영양성분 (100g 기준)
+            <div className="grid grid-cols-2 gap-1 text-xs mt-auto">
+              <div className="flex items-center bg-pink-50 px-1.5 py-1 rounded-md">
+                <span className="w-2 h-2 rounded-full bg-primary mr-1"></span>
+                <span className="text-gray-700">{product.calories} kcal</span>
               </div>
-              <div className="grid grid-cols-2 gap-1 text-xs">
-                <div className="flex items-center bg-pink-50 px-1.5 py-1 rounded-md">
-                  <span className="w-2 h-2 rounded-full bg-primary mr-1"></span>
-                  <span className="text-gray-700">{product.calories} kcal</span>
-                </div>
-                <div className="flex items-center bg-green-50 px-1.5 py-1 rounded-md">
-                  <span className="w-2 h-2 rounded-full bg-green-500 mr-1"></span>
-                  <span className="text-gray-700 truncate">
-                    {product.protein !== null ? `${product.protein}g 단백질` : '-'}
-                  </span>
-                </div>
-                <div className="flex items-center bg-blue-50 px-1.5 py-1 rounded-md">
-                  <span className="w-2 h-2 rounded-full bg-blue-500 mr-1"></span>
-                  <span className="text-gray-700 truncate">
-                    {product.carbs !== null ? `${product.carbs}g 탄수화물` : '-'}
-                  </span>
-                </div>
-                <div className="flex items-center bg-yellow-50 px-1.5 py-1 rounded-md">
-                  <span className="w-2 h-2 rounded-full bg-yellow-500 mr-1"></span>
-                  <span className="text-gray-700 truncate">
-                    {product.fat !== null ? `${product.fat}g 지방` : '-'}
-                  </span>
-                </div>
+              <div className="flex items-center bg-green-50 px-1.5 py-1 rounded-md">
+                <span className="w-2 h-2 rounded-full bg-green-500 mr-1"></span>
+                <span className="text-gray-700 truncate">
+                  {product.protein !== null ? `${product.protein}g 단백질` : '정보 없음'}
+                </span>
+              </div>
+              <div className="flex items-center bg-blue-50 px-1.5 py-1 rounded-md">
+                <span className="w-2 h-2 rounded-full bg-blue-500 mr-1"></span>
+                <span className="text-gray-700 truncate">
+                  {product.carbs !== null ? `${product.carbs}g 탄수화물` : '정보 없음'}
+                </span>
+              </div>
+              <div className="flex items-center bg-yellow-50 px-1.5 py-1 rounded-md">
+                <span className="w-2 h-2 rounded-full bg-yellow-500 mr-1"></span>
+                <span className="text-gray-700 truncate">
+                  {product.fat !== null ? `${product.fat}g 지방` : '정보 없음'}
+                </span>
               </div>
             </div>
           </div>
