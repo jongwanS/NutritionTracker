@@ -446,8 +446,8 @@ export async function loadProductData(): Promise<Product[]> {
         
         // 수동으로 무게가 설정되지 않은 경우, 데이터에서 추출 시도
         if (!extractedWeight) {
-          // 1. 먼저 식품중량 필드에서 바로 추출 시도 (타입 처리)
-          if (typeof item['식품중량'] === 'string') {
+          // 1. 먼저 "식품중량" 필드에서 바로 추출 시도
+          if (item['식품중량']) {
             const weightMatch = item['식품중량'].match(/(\d+)g/i);
             if (weightMatch) {
               extractedWeight = parseInt(weightMatch[1]);
