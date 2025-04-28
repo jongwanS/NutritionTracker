@@ -446,14 +446,27 @@ export async function loadProductData(): Promise<Product[]> {
         
         // 수동으로 무게가 설정되지 않은 경우, 데이터에서 추출 시도
         if (!extractedWeight) {
-          // 제품명이나 JSON 데이터에서 중량 정보 추출 시도
-          const weightMatch = productName.match(/(\d+)g/i) || 
+          // 1. 먼저 식품중량 필드에서 바로 추출 시도 (타입 처리)
+          if (typeof item['식품중량'] === 'string') {
+            const weightMatch = item['식품중량'].match(/(\d+)g/i);
+            if (weightMatch) {
+              extractedWeight = parseInt(weightMatch[1]);
+              console.log(`중량 추출 성공 (식품중량): ${productName} - ${extractedWeight}g`);
+            }
+          }
+          
+          // 2. 식품중량에서 추출 실패 시 다른 필드 확인
+          if (!extractedWeight) {
+            // 제품명이나 JSON 데이터에서 중량 정보 추출 시도
+            const weightMatch = productName.match(/(\d+)g/i) || 
                               JSON.stringify(item).match(/중량[:\s]*(\d+)g/i) ||
                               JSON.stringify(item).match(/무게[:\s]*(\d+)g/i) ||
                               item['영양성분함량기준량']?.match(/(\d+)g/i);
-          
-          if (weightMatch) {
-            extractedWeight = parseInt(weightMatch[1]);
+            
+            if (weightMatch) {
+              extractedWeight = parseInt(weightMatch[1]);
+              console.log(`중량 추출 성공 (기타): ${productName} - ${extractedWeight}g`);
+            }
           }
         }
         
@@ -501,6 +514,39 @@ export async function loadProductData(): Promise<Product[]> {
         cachedProducts.set(product.id, product);
         console.log(`제품 추가됨: ${product.name} (${franchiseName})`);
       }
+    }
+    
+    // 특수 제품 추가: 맘스터치 간장마늘싸이 버거 직접 추가
+    const mamstouchFranchise = franchises.find(f => f.name === '맘스터치');
+    if (mamstouchFranchise) {
+      const soyGarlicSighBurger: Product = {
+        id: productId++,
+        name: "간장마늘싸이 버거",
+        franchiseId: mamstouchFranchise.id,
+        categoryId: 1, // 버거 카테고리
+        description: "맘스터치의 간장마늘싸이 버거 메뉴입니다. (영양성분: 전체 250g 기준)",
+        weight: 250, // 250g으로 설정
+        imageUrl: "",
+        calories: 289,
+        protein: 14.07,
+        carbs: 19.01,
+        fat: 17.38,
+        saturatedFat: 4.94,
+        transFat: 0.19,
+        cholesterol: 37.26,
+        sodium: 511,
+        fiber: null,
+        sugar: 3.8,
+        calcium: null,
+        iron: null,
+        vitaminD: null,
+        allergens: [1, 2, 8], // 밀, 유제품, 대두
+        featuredProduct: true
+      };
+      
+      // 캐시에 저장
+      cachedProducts.set(soyGarlicSighBurger.id, soyGarlicSighBurger);
+      console.log(`특수 제품 추가됨: ${soyGarlicSighBurger.name} (맘스터치)`);
     }
     
     console.log(`총 ${cachedProducts.size}개 제품 로드 완료`);
