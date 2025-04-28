@@ -192,8 +192,7 @@ export class MemStorage implements IStorage {
       vitaminD: insertProduct.vitaminD || null,
       allergens: normalizedAllergens,
       featuredProduct: insertProduct.featuredProduct !== undefined ? 
-        insertProduct.featuredProduct : false,
-      weight: insertProduct.weight || null
+        insertProduct.featuredProduct : false
     };
     
     this._products.set(id, product);
