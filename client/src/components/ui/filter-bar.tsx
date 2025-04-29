@@ -38,8 +38,8 @@ export function FilterBar({ className, onFilterChange }: FilterBarProps) {
 
   // 필터 변경 처리 함수
   const handleFilterChange = useCallback((value: string, filterName: keyof typeof filters) => {
-    // 값이 0인 경우 필터 제거
-    const newValue = value === "0" ? "" : value;
+    // 값이 0인 경우 "0"으로 명시적 처리 (빈 문자열이 아님)
+    const newValue = value;
     
     const updatedFilters = {
       ...filters,
@@ -49,13 +49,25 @@ export function FilterBar({ className, onFilterChange }: FilterBarProps) {
     console.log(`필터 변경: ${filterName} = ${newValue}`);
     setFilters(updatedFilters);
     
-    // URL 파라미터 업데이트
-    const newParams = new URLSearchParams(searchParams);
-    if (newValue && newValue !== "0") {
-      newParams.set(filterName, newValue);
-    } else {
-      newParams.delete(filterName);
+    // URL 파라미터 업데이트 - 필터가 0이 아닌 경우에만 파라미터 추가
+    const newParams = new URLSearchParams();
+    
+    // 현재 URL의 다른 파라미터들도 유지
+    for (const [key, value] of searchParams.entries()) {
+      if (!Object.keys(filters).includes(key)) {
+        newParams.set(key, value);
+      }
     }
+    
+    // 업데이트된 필터 값 적용
+    Object.entries(updatedFilters).forEach(([key, val]) => {
+      if (val && val !== "0") {
+        newParams.set(key, val as string);
+      }
+    });
+    
+    // URL 업데이트
+    console.log("URL 파라미터 업데이트:", Object.fromEntries(newParams.entries()));
     setSearchParams(newParams);
     
     // 상위 컴포넌트에 필터 변경 알림

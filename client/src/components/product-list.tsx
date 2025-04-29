@@ -75,36 +75,44 @@ export function ProductList({ franchiseId, initialFilters }: ProductListProps) {
 
   // Fetch products by franchise with filters
   const { data: products, isLoading, error } = useQuery({
-    // 쿼리 키에 모든 파라미터를 명시적으로 포함
+    // 쿼리 키에 모든 파라미터를 명시적으로 포함 (queryKey 변경 시 쿼리 재실행됨)
     queryKey: ['/api/search', { franchiseId, calorieRange, proteinRange, carbsRange, fatRange }],
     queryFn: async () => {
       try {
-        // API 호출을 위한 파라미터 구성
-        const params = new URLSearchParams();
-        params.append("franchiseId", franchiseId.toString());
+        // API 호출을 위한 파라미터 객체 구성 (URLSearchParams 대신 직접 객체 구성)
+        const params: Record<string, string> = {
+          franchiseId: franchiseId.toString()
+        };
         
-        // 각 필터 값이 존재하고 0이 아닌 경우에만 파라미터 추가
+        // 필터 값이 0이 아닌 경우에만 파라미터에 추가
         if (calorieRange && calorieRange !== "0") {
-          params.append("calorieRange", calorieRange);
+          params.calorieRange = calorieRange;
         }
         if (proteinRange && proteinRange !== "0") {
-          params.append("proteinRange", proteinRange);
+          params.proteinRange = proteinRange;
         }
         if (carbsRange && carbsRange !== "0") {
-          params.append("carbsRange", carbsRange);
+          params.carbsRange = carbsRange;
         }
         if (fatRange && fatRange !== "0") {
-          params.append("fatRange", fatRange);
+          params.fatRange = fatRange;
         }
         
-        const endpoint = `/api/search?${params.toString()}`;
-        console.log("API 호출:", endpoint);
+        // URL 쿼리 파라미터로 변환
+        const queryParams = new URLSearchParams(params);
+        const endpoint = `/api/search?${queryParams.toString()}`;
         
+        // 디버깅 로그
+        console.log("API 호출:", endpoint);
+        console.log("필터 상태:", { calorieRange, proteinRange, carbsRange, fatRange });
+        
+        // API 요청 수행
         const res = await fetch(endpoint);
         if (!res.ok) {
           console.error('API 응답 오류:', res.status, await res.text());
           return [];
         }
+        
         const data = await res.json();
         return Array.isArray(data) ? data : [];
       } catch (err) {
@@ -112,6 +120,9 @@ export function ProductList({ franchiseId, initialFilters }: ProductListProps) {
         return [];
       }
     },
+    // 파라미터 값이 변경될 때마다 즉시 쿼리 재실행
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
   });
   
   // Fetch allergens for badges
