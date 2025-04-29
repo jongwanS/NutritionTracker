@@ -20,6 +20,7 @@ export interface KoreanFoodItem {
   식품세분류코드: number;
   식품세분류명: string;
   영양성분함량기준량: string;
+  식품중량?: string; // 추가: 선택적 필드로 식품 중량 정보
   '에너지(kcal)': number;
   '수분(g)': number | null;
   '단백질(g)': number;
@@ -98,7 +99,6 @@ const franchiseMap: { [key: string]: { id: number, categoryId: number, logoUrl: 
   "자담치킨": { id: 14, categoryId: 2, logoUrl: "" },
   "또래오래": { id: 15, categoryId: 2, logoUrl: "" },
   "멕시카나": { id: 16, categoryId: 2, logoUrl: "" },
-  "비비큐": { id: 17, categoryId: 2, logoUrl: "" },
   
   // 3. 피자 카테고리
   "도미노피자": { id: 18, categoryId: 3, logoUrl: "" },
