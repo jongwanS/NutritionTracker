@@ -52,11 +52,10 @@ export function FilterBar({ className, onFilterChange }: FilterBarProps) {
     // URL 파라미터 업데이트 - 필터가 0이 아닌 경우에만 파라미터 추가
     const newParams = new URLSearchParams();
     
-    // 현재 URL의 다른 파라미터들도 유지
-    for (const [key, value] of searchParams.entries()) {
-      if (!Object.keys(filters).includes(key)) {
-        newParams.set(key, value);
-      }
+    // franchiseId 파라미터만 유지 (다른 파라미터는 모두 필터 관련)
+    const franchiseId = searchParams.get("franchiseId");
+    if (franchiseId) {
+      newParams.set("franchiseId", franchiseId);
     }
     
     // 업데이트된 필터 값 적용

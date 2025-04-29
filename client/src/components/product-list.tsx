@@ -228,8 +228,43 @@ export function ProductList({ franchiseId, initialFilters }: ProductListProps) {
     );
   }
   
-  // 먼저 products가 배열인지 확인
-  const productArray = Array.isArray(products) ? products : [];
+  // 먼저 products가 배열인지 확인하고 필요한 경우 클라이언트 측에서 필터링
+  let productArray = Array.isArray(products) ? products : [];
+  
+  // 클라이언트 측 필터링 적용 (서버 필터링이 작동하지 않을 경우를 대비)
+  if (productArray.length > 0) {
+    // 칼로리 필터 (이하)
+    if (calorieRange && calorieRange !== "0") {
+      productArray = productArray.filter(product => 
+        product.calories !== null && product.calories <= parseInt(calorieRange)
+      );
+      console.log(`클라이언트측 칼로리 필터 적용: ${calorieRange}kcal 이하, 남은 항목: ${productArray.length}`);
+    }
+    
+    // 단백질 필터 (이상)
+    if (proteinRange && proteinRange !== "0") {
+      productArray = productArray.filter(product => 
+        product.protein !== null && product.protein >= parseInt(proteinRange)
+      );
+      console.log(`클라이언트측 단백질 필터 적용: ${proteinRange}g 이상, 남은 항목: ${productArray.length}`);
+    }
+    
+    // 탄수화물 필터 (이하)
+    if (carbsRange && carbsRange !== "0") {
+      productArray = productArray.filter(product => 
+        product.carbs !== null && product.carbs <= parseInt(carbsRange)
+      );
+      console.log(`클라이언트측 탄수화물 필터 적용: ${carbsRange}g 이하, 남은 항목: ${productArray.length}`);
+    }
+    
+    // 지방 필터 (이하)
+    if (fatRange && fatRange !== "0") {
+      productArray = productArray.filter(product => 
+        product.fat !== null && product.fat <= parseInt(fatRange)
+      );
+      console.log(`클라이언트측 지방 필터 적용: ${fatRange}g 이하, 남은 항목: ${productArray.length}`);
+    }
+  }
   
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
