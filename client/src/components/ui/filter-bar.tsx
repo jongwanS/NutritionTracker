@@ -24,6 +24,34 @@ export function FilterBar({ className, onFilterChange }: FilterBarProps) {
     carbsRange: searchParams.get("carbsRange") || "0",
     fatRange: searchParams.get("fatRange") || "0"
   });
+  
+  // 초기 로드 시 URL에서 파라미터 로드하고 필터 적용
+  useEffect(() => {
+    const urlCalorieRange = searchParams.get("calorieRange") || "0";
+    const urlProteinRange = searchParams.get("proteinRange") || "0";
+    const urlCarbsRange = searchParams.get("carbsRange") || "0";
+    const urlFatRange = searchParams.get("fatRange") || "0";
+    
+    // URL에 적어도 하나의 필터가 있는 경우에만 적용
+    if (urlCalorieRange !== "0" || urlProteinRange !== "0" || urlCarbsRange !== "0" || urlFatRange !== "0") {
+      console.log("URL에서 필터 파라미터 로드:", { urlCalorieRange, urlProteinRange, urlCarbsRange, urlFatRange });
+      
+      const initialFilters = {
+        calorieRange: urlCalorieRange,
+        proteinRange: urlProteinRange,
+        carbsRange: urlCarbsRange,
+        fatRange: urlFatRange
+      };
+      
+      setFilters(initialFilters);
+      
+      // 콜백 호출하여 필터 적용
+      if (onFilterChange) {
+        console.log("URL 파라미터 기반 초기 필터 적용");
+        onFilterChange(initialFilters);
+      }
+    }
+  }, []);
 
   const handleFilterChange = useCallback((value: string, filterName: string) => {
     // 값이 0인 경우 필터 제거 (빈 문자열로 설정)

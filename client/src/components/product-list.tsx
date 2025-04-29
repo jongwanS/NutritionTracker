@@ -59,6 +59,15 @@ export function ProductList({ franchiseId }: ProductListProps) {
   const carbsRange = searchParams.get("carbsRange") || "";
   const fatRange = searchParams.get("fatRange") || "";
   
+  // URL에서 필터 파라미터 실시간 로그 (디버깅용)
+  console.log("현재 URL 필터 파라미터:", {
+    franchiseId, 
+    calorieRange: calorieRange || "없음", 
+    proteinRange: proteinRange || "없음", 
+    carbsRange: carbsRange || "없음", 
+    fatRange: fatRange || "없음"
+  });
+  
   // Create query parameter string
   const filterParams = new URLSearchParams();
   filterParams.append("franchiseId", franchiseId.toString());
@@ -68,38 +77,43 @@ export function ProductList({ franchiseId }: ProductListProps) {
   if (carbsRange) filterParams.append("carbsRange", carbsRange);
   if (fatRange) filterParams.append("fatRange", fatRange);
   
+  // 컴포넌트 마운트 시 한번 로그 기록
+  useEffect(() => {
+    console.log("ProductList 컴포넌트 마운트, 현재 필터:", {
+      franchiseId,
+      calorieRange: calorieRange || "없음",
+      proteinRange: proteinRange || "없음",
+      carbsRange: carbsRange || "없음",
+      fatRange: fatRange || "없음"
+    });
+  }, []);
+
   // Fetch products by franchise with filters
   const { data: products, isLoading, error } = useQuery({
-    queryKey: ['/api/products', { franchiseId, calorieRange, proteinRange, carbsRange, fatRange }],
+    // 쿼리 키에 모든 파라미터를 명시적으로 포함
+    queryKey: ['/api/search', { franchiseId, calorieRange, proteinRange, carbsRange, fatRange }],
     queryFn: async () => {
       try {
-        // Use /api/search only when filters are applied
-        const hasFilters = calorieRange || proteinRange || carbsRange || fatRange;
-        let endpoint = '';
+        // Use /api/search 엔드포인트로 모든 요청 처리 (필터 유무 관계없이)
+        const params = new URLSearchParams();
+        params.append("franchiseId", franchiseId.toString());
         
-        if (hasFilters) {
-          // 검색 API를 사용하고 필터 파라미터 추가
-          endpoint = `/api/search?franchiseId=${franchiseId}`;
-          
-          // 각 필터 값이 0이거나 빈 문자열이 아닌 경우에만 파라미터 추가
-          if (calorieRange && calorieRange !== "0") {
-            endpoint += `&calorieRange=${calorieRange}`;
-          }
-          if (proteinRange && proteinRange !== "0") {
-            endpoint += `&proteinRange=${proteinRange}`;
-          }
-          if (carbsRange && carbsRange !== "0") {
-            endpoint += `&carbsRange=${carbsRange}`;
-          }
-          if (fatRange && fatRange !== "0") {
-            endpoint += `&fatRange=${fatRange}`;
-          }
-          
-          console.log("필터 적용 API 호출:", endpoint);
-        } else {
-          // 필터가 없으면 기본 제품 API 사용
-          endpoint = `/api/products?franchiseId=${franchiseId}`;
+        // 각 필터 값이 존재하고 0이 아닌 경우에만 파라미터 추가
+        if (calorieRange && calorieRange !== "0") {
+          params.append("calorieRange", calorieRange);
         }
+        if (proteinRange && proteinRange !== "0") {
+          params.append("proteinRange", proteinRange);
+        }
+        if (carbsRange && carbsRange !== "0") {
+          params.append("carbsRange", carbsRange);
+        }
+        if (fatRange && fatRange !== "0") {
+          params.append("fatRange", fatRange);
+        }
+        
+        const endpoint = `/api/search?${params.toString()}`;
+        console.log("API 호출:", endpoint);
         
         const res = await fetch(endpoint);
         if (!res.ok) {

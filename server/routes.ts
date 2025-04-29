@@ -182,6 +182,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // 디버깅을 위한 추가 로그
       console.log("Parsed search params:", searchParams);
+      console.log("Original URL 쿼리 파라미터:", req.url);
       
       // Handle range-based filters
       const parsedParams: any = { ...searchParams };
@@ -192,6 +193,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // 숫자로 직접 전달되는 경우 (슬라이더에서 직접 설정한 값)
         if (!isNaN(Number(calorieRange)) && Number(calorieRange) > 0) {
           parsedParams.maxCalories = Number(calorieRange);
+          console.log(`칼로리 필터 적용: ${calorieRange} kcal 이하`);
         }
         // 기존 문자열 패턴 지원 (하위 호환성)
         else if (calorieRange === "0-300") {
@@ -271,8 +273,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
+      // 최종 파라미터 로그 출력
+      console.log("최종 검색 파라미터:", parsedParams);
+      
       // Perform search
       const products = await storage.searchProducts(parsedParams);
+      
+      // 검색 결과 로그
+      console.log(`검색 결과: ${products.length}개 항목`);
       
       // Return search results
       res.json(products);
