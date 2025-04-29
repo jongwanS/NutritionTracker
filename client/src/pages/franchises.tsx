@@ -49,15 +49,7 @@ export default function Franchises({ params }: FranchisesProps) {
         )}
       </h1>
       
-      {/* 프랜차이즈 목록 위 광고 배너 */}
-      <BannerAd className="my-4" />
-      
       <FranchiseGrid categoryId={categoryId} />
-      
-      {/* 프랜차이즈 목록 아래 반응형 광고 */}
-      <div className="mt-10">
-        <ResponsiveAd />
-      </div>
     </>
   );
 }

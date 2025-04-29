@@ -11,7 +11,7 @@ import { Product } from "@/types";
 import { Heart, AlertCircle, Search, Store, Grid, List, Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { BannerAd, ResponsiveAd } from "@/components/ui/advertisement";
+
 import { useToast } from "@/hooks/use-toast";
 
 export default function SearchResults() {
@@ -509,11 +509,7 @@ export default function SearchResults() {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {displayResults.map((product, index) => (
             <React.Fragment key={`product-${product.id}`}>
-              {index > 0 && index % 8 === 0 && (
-                <div key={`ad-${index}`} className="col-span-full my-2">
-                  <ResponsiveAd />
-                </div>
-              )}
+
             
               <div 
                 className="aspect-square bg-white rounded-xl shadow-sm overflow-hidden card-hover border border-pink-100 cursor-pointer"
@@ -596,11 +592,7 @@ export default function SearchResults() {
         <div className="flex flex-col gap-4">
           {displayResults.map((product, index) => (
             <React.Fragment key={`product-list-${product.id}`}>
-              {index > 0 && index % 3 === 0 && (
-                <div key={`ad-list-${index}`} className="my-2">
-                  <BannerAd />
-                </div>
-              )}
+
               
               <div 
                 className="bg-white rounded-xl shadow-sm overflow-hidden card-hover border border-pink-100 cursor-pointer p-4 relative"
@@ -707,12 +699,7 @@ export default function SearchResults() {
         </div>
       )}
       
-      {/* 결과 목록 아래에 반응형 광고 추가 */}
-      {!isLoading && Array.isArray(filteredResults) && filteredResults.length > 0 && (
-        <div className="mt-12">
-          <ResponsiveAd />
-        </div>
-      )}
+
     </>
   );
 }
