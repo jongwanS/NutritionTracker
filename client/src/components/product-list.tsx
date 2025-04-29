@@ -315,28 +315,35 @@ export function ProductList({ franchiseId, initialFilters, products: filteredPro
             )}
             
             {/* 영양 정보 */}
-            <div className="grid grid-cols-2 gap-1 text-xs mt-auto">
-              <div className="flex items-center bg-pink-50 px-1.5 py-1 rounded-md">
-                <span className="w-2 h-2 rounded-full bg-primary mr-1"></span>
-                <span className="text-gray-700">{product.calories} kcal</span>
+            <div className="grid grid-cols-1 gap-1 text-xs mt-auto">
+              {/* 영양정보 기준 안내 */}
+              <div className="text-center text-[10px] text-gray-500 mb-1 bg-gray-100/70 py-0.5 rounded">
+                100g 당 영양성분
               </div>
-              <div className="flex items-center bg-green-50 px-1.5 py-1 rounded-md">
-                <span className="w-2 h-2 rounded-full bg-green-500 mr-1"></span>
-                <span className="text-gray-700 truncate">
-                  {product.protein !== null ? `${product.protein}g 단백질` : '정보 없음'}
-                </span>
-              </div>
-              <div className="flex items-center bg-blue-50 px-1.5 py-1 rounded-md">
-                <span className="w-2 h-2 rounded-full bg-blue-500 mr-1"></span>
-                <span className="text-gray-700 truncate">
-                  {product.carbs !== null ? `${product.carbs}g 탄수화물` : '정보 없음'}
-                </span>
-              </div>
-              <div className="flex items-center bg-yellow-50 px-1.5 py-1 rounded-md">
-                <span className="w-2 h-2 rounded-full bg-yellow-500 mr-1"></span>
-                <span className="text-gray-700 truncate">
-                  {product.fat !== null ? `${product.fat}g 지방` : '정보 없음'}
-                </span>
+              
+              <div className="grid grid-cols-2 gap-1">
+                <div className="flex items-center bg-pink-50 px-1.5 py-1 rounded-md">
+                  <span className="w-2 h-2 rounded-full bg-primary mr-1"></span>
+                  <span className="text-gray-700">{product.calories} kcal</span>
+                </div>
+                <div className="flex items-center bg-green-50 px-1.5 py-1 rounded-md">
+                  <span className="w-2 h-2 rounded-full bg-green-500 mr-1"></span>
+                  <span className="text-gray-700 truncate">
+                    {product.protein !== null ? `${product.protein}g 단백질` : '정보 없음'}
+                  </span>
+                </div>
+                <div className="flex items-center bg-blue-50 px-1.5 py-1 rounded-md">
+                  <span className="w-2 h-2 rounded-full bg-blue-500 mr-1"></span>
+                  <span className="text-gray-700 truncate">
+                    {product.carbs !== null ? `${product.carbs}g 탄수화물` : '정보 없음'}
+                  </span>
+                </div>
+                <div className="flex items-center bg-yellow-50 px-1.5 py-1 rounded-md">
+                  <span className="w-2 h-2 rounded-full bg-yellow-500 mr-1"></span>
+                  <span className="text-gray-700 truncate">
+                    {product.fat !== null ? `${product.fat}g 지방` : '정보 없음'}
+                  </span>
+                </div>
               </div>
             </div>
           </div>

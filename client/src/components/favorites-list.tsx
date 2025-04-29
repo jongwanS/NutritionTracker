@@ -112,10 +112,16 @@ export function FavoritesList({ onClose }: { onClose: () => void }) {
                     </span>
                   </div>
                   <div className="font-medium text-gray-800">{product.name}</div>
-                  <div className="flex gap-2 mt-1">
+                  <div className="text-[9px] text-gray-500 mt-1">
+                    100g 당 영양성분
+                  </div>
+                  <div className="flex gap-2 mt-0.5">
                     <span className="text-xs text-gray-600">{product.calories} kcal</span>
                     {product.protein && (
                       <span className="text-xs text-green-600">단백질 {product.protein}g</span>
+                    )}
+                    {product.carbs && (
+                      <span className="text-xs text-blue-600">탄수화물 {product.carbs}g</span>
                     )}
                   </div>
                 </div>
