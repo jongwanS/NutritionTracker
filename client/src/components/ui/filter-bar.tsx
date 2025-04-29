@@ -34,10 +34,12 @@ export function FilterBar({ className, onFilterChange }: FilterBarProps) {
       [filterName]: newValue
     };
     
+    console.log(`필터 변경: ${filterName} = ${newValue}`);
     setFilters(updatedFilters);
     
     // 값 변경 시 즉시 콜백 호출하여 실시간 필터링
     if (onFilterChange) {
+      console.log('필터 변경 콜백 호출:', updatedFilters);
       onFilterChange(updatedFilters);
     }
   }, [filters, onFilterChange]);
@@ -51,9 +53,11 @@ export function FilterBar({ className, onFilterChange }: FilterBarProps) {
       fatRange: "0"
     };
     
+    console.log('필터 초기화');
     setFilters(defaultFilters);
     
     if (onFilterChange) {
+      console.log('필터 초기화 콜백 호출');
       onFilterChange(defaultFilters);
     }
     

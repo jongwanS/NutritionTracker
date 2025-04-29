@@ -76,13 +76,26 @@ export function ProductList({ franchiseId }: ProductListProps) {
         // Use /api/search only when filters are applied
         const hasFilters = calorieRange || proteinRange || carbsRange || fatRange;
         let endpoint = '';
+        
         if (hasFilters) {
           // 검색 API를 사용하고 필터 파라미터 추가
           endpoint = `/api/search?franchiseId=${franchiseId}`;
-          if (calorieRange) endpoint += `&calorieRange=${calorieRange}`;
-          if (proteinRange) endpoint += `&proteinRange=${proteinRange}`;
-          if (carbsRange) endpoint += `&carbsRange=${carbsRange}`;
-          if (fatRange) endpoint += `&fatRange=${fatRange}`;
+          
+          // 각 필터 값이 0이거나 빈 문자열이 아닌 경우에만 파라미터 추가
+          if (calorieRange && calorieRange !== "0") {
+            endpoint += `&calorieRange=${calorieRange}`;
+          }
+          if (proteinRange && proteinRange !== "0") {
+            endpoint += `&proteinRange=${proteinRange}`;
+          }
+          if (carbsRange && carbsRange !== "0") {
+            endpoint += `&carbsRange=${carbsRange}`;
+          }
+          if (fatRange && fatRange !== "0") {
+            endpoint += `&fatRange=${fatRange}`;
+          }
+          
+          console.log("필터 적용 API 호출:", endpoint);
         } else {
           // 필터가 없으면 기본 제품 API 사용
           endpoint = `/api/products?franchiseId=${franchiseId}`;
@@ -90,7 +103,7 @@ export function ProductList({ franchiseId }: ProductListProps) {
         
         const res = await fetch(endpoint);
         if (!res.ok) {
-          console.error('API 응답 오류:', res.status);
+          console.error('API 응답 오류:', res.status, await res.text());
           return [];
         }
         const data = await res.json();

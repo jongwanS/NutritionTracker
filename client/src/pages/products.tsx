@@ -31,8 +31,11 @@ export default function Products({ params }: ProductsProps) {
   
   // 필터 변경 시 제품 쿼리 무효화 처리
   const handleFilterChange = () => {
-    // 제품 쿼리를 무효화하여 새로운 필터로 다시 로드하게 함
+    // 제품 쿼리와 검색 쿼리 모두 무효화하여 새로운 필터로 다시 로드하게 함
     queryClient.invalidateQueries({ queryKey: ['/api/products', { franchiseId }] });
+    queryClient.invalidateQueries({ queryKey: ['/api/search'] });
+    
+    console.log("필터 변경됨: 제품 및 검색 쿼리 무효화");
   };
   
   // Scroll to top on page load
