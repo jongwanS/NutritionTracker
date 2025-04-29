@@ -41,10 +41,26 @@ export default function RootLayout({
                 </li>
                 <li>
                   <a 
+                    href="/categories" 
+                    className="text-gray-600 hover:text-pink-600 transition-colors"
+                  >
+                    카테고리
+                  </a>
+                </li>
+                <li>
+                  <a 
                     href="/search" 
                     className="text-gray-600 hover:text-pink-600 transition-colors"
                   >
                     검색
+                  </a>
+                </li>
+                <li>
+                  <a 
+                    href="/favorites" 
+                    className="text-gray-600 hover:text-pink-600 transition-colors"
+                  >
+                    즐겨찾기
                   </a>
                 </li>
               </ul>

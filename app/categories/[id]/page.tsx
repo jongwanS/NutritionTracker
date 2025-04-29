@@ -2,15 +2,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import ProductCard from '../../components/product-card';
 import FilterBar from '../../components/filter-bar';
+import ProductCard from '../../components/product-card';
 
-export default function FranchiseDetail() {
+export default function CategoryDetail() {
   const params = useParams();
   const router = useRouter();
   const id = params?.id as string;
-  const [franchise, setFranchise] = useState<any>(null);
-  const [allProducts, setAllProducts] = useState<any[]>([]);
+  const [category, setCategory] = useState<any>(null);
+  const [franchises, setFranchises] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -25,48 +26,56 @@ export default function FranchiseDetail() {
   });
 
   useEffect(() => {
-    async function fetchFranchiseData() {
+    async function fetchCategoryData() {
       try {
         setLoading(true);
         
         if (!id) {
-          setError('프랜차이즈 ID가 올바르지 않습니다.');
+          setError('카테고리 ID가 올바르지 않습니다.');
           return;
         }
         
-        // 프랜차이즈 정보 조회
-        const franchiseResponse = await fetch(`/api/franchises/${id}`);
-        if (!franchiseResponse.ok) {
-          throw new Error('프랜차이즈 정보를 가져오는 데 실패했습니다.');
+        // 카테고리 정보 조회
+        const categoryResponse = await fetch(`/api/categories/${id}`);
+        if (!categoryResponse.ok) {
+          throw new Error('카테고리 정보를 가져오는 데 실패했습니다.');
         }
-        const franchiseData = await franchiseResponse.json();
-        setFranchise(franchiseData);
+        const categoryData = await categoryResponse.json();
+        setCategory(categoryData);
         
-        // 프랜차이즈 제품 목록 조회
-        const productsResponse = await fetch(`/api/products?franchiseId=${id}`);
+        // 카테고리 관련 프랜차이즈 목록 조회
+        const franchisesResponse = await fetch(`/api/franchises?categoryId=${id}`);
+        if (!franchisesResponse.ok) {
+          throw new Error('프랜차이즈 목록을 가져오는 데 실패했습니다.');
+        }
+        const franchisesData = await franchisesResponse.json();
+        setFranchises(franchisesData);
+        
+        // 카테고리 제품 목록 조회
+        const productsResponse = await fetch(`/api/products?categoryId=${id}`);
         if (!productsResponse.ok) {
           throw new Error('제품 목록을 가져오는 데 실패했습니다.');
         }
         const productsData = await productsResponse.json();
-        setAllProducts(productsData);
+        setProducts(productsData);
         setFilteredProducts(productsData);
       } catch (error) {
-        console.error('프랜차이즈 데이터 조회 오류:', error);
-        setError('프랜차이즈 정보를 가져오는 중 오류가 발생했습니다.');
+        console.error('카테고리 데이터 조회 오류:', error);
+        setError('카테고리 정보를 가져오는 중 오류가 발생했습니다.');
       } finally {
         setLoading(false);
       }
     }
     
-    fetchFranchiseData();
+    fetchCategoryData();
   }, [id]);
   
   // 필터 변경 시 제품 필터링
   useEffect(() => {
-    if (!allProducts.length) return;
+    if (!products.length) return;
     
     // 클라이언트 사이드에서 필터링
-    let results = [...allProducts];
+    let results = [...products];
     
     // 칼로리 필터
     if (filters.calorieRange !== '0') {
@@ -101,11 +110,15 @@ export default function FranchiseDetail() {
     }
     
     setFilteredProducts(results);
-  }, [allProducts, filters]);
+  }, [products, filters]);
   
   // 필터 변경 핸들러
   const handleFilterChange = (newFilters: any) => {
     setFilters(newFilters);
+  };
+  
+  const handleFranchiseClick = (franchiseId: number) => {
+    router.push(`/franchises/${franchiseId}`);
   };
   
   const goBack = () => {
@@ -115,16 +128,16 @@ export default function FranchiseDetail() {
   if (loading) {
     return (
       <div className="container mx-auto p-6 text-center">
-        <p className="text-gray-500">프랜차이즈 정보를 불러오는 중...</p>
+        <p className="text-gray-500">카테고리 정보를 불러오는 중...</p>
       </div>
     );
   }
 
-  if (error || !franchise) {
+  if (error || !category) {
     return (
       <div className="container mx-auto p-6 text-center">
         <div className="bg-red-50 p-4 rounded-lg">
-          <p className="text-red-600">{error || '프랜차이즈 정보를 찾을 수 없습니다.'}</p>
+          <p className="text-red-600">{error || '카테고리 정보를 찾을 수 없습니다.'}</p>
           <button 
             onClick={goBack}
             className="mt-4 px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-colors"
@@ -145,13 +158,30 @@ export default function FranchiseDetail() {
         >
           ← 돌아가기
         </button>
-        <h1 className="text-xl sm:text-2xl font-bold">{franchise.name}</h1>
+        <h1 className="text-xl sm:text-2xl font-bold">
+          {category.nameKorean || category.name}
+        </h1>
       </div>
       
-      {franchise.description && (
-        <p className="text-gray-600 mb-6">{franchise.description}</p>
+      {/* 프랜차이즈 섹션 */}
+      {franchises.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold mb-4">프랜차이즈</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {franchises.map(franchise => (
+              <div
+                key={franchise.id}
+                className="aspect-square bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer p-4 flex flex-col items-center justify-center text-center"
+                onClick={() => handleFranchiseClick(franchise.id)}
+              >
+                <div className="text-lg font-semibold">{franchise.name}</div>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
       
+      {/* 제품 섹션 */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         {/* 왼쪽 필터 영역 */}
         <div className="lg:col-span-1">
@@ -206,7 +236,7 @@ export default function FranchiseDetail() {
           ) : (
             <div className="text-center p-12 bg-gray-50 rounded-lg">
               <p className="text-gray-500">
-                {allProducts.length > 0 
+                {products.length > 0 
                   ? '선택한 필터에 맞는 메뉴가 없습니다.' 
                   : '등록된 메뉴가 없습니다.'}
               </p>
