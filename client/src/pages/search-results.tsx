@@ -552,17 +552,7 @@ export default function SearchResults() {
                     )}
                   </div>
                   
-                  {/* 알러지 정보 */}
-                  {product.allergens && product.allergens.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-2 justify-center">
-                      {getAllergenNames(product.allergens as number[]).slice(0, 2).map((allergen, idx) => (
-                        <AllergyBadge key={idx} name={allergen as string} className="text-xs" />
-                      ))}
-                      {getAllergenNames(product.allergens as number[]).length > 2 && (
-                        <span className="text-xs text-pink-600">+{getAllergenNames(product.allergens as number[]).length - 2}</span>
-                      )}
-                    </div>
-                  )}
+                  {/* 알러지 정보 삭제됨 */}
                   
                   {/* 영양 정보 */}
                   <div className="grid grid-cols-1 gap-1 text-xs mt-auto">
