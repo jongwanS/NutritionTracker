@@ -1,105 +1,134 @@
 'use client';
 
-import React, { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-// import { Search } from "lucide-react";
-
-// 나중에 마이그레이션 이후 수정할 컴포넌트들
-// 아직 Next.js용으로 변환되지 않은 컴포넌트
-// import { CategoryGrid } from "@/components/category-grid";
-// import { FilterBar } from "@/components/ui/filter-bar";
-// import { BannerAd, ResponsiveAd } from "@/components/ui/advertisement";
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filters, setFilters] = useState({
-    calorieRange: searchParams.get("calorieRange") || "",
-    proteinRange: searchParams.get("proteinRange") || "",
-    carbsRange: searchParams.get("carbsRange") || "",
-    fatRange: searchParams.get("fatRange") || ""
-  });
+  const [categories, setCategories] = useState<any[]>([]);
+  const [franchises, setFranchises] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  // 필터 변경을 처리하는 함수
-  const handleFilterChange = (newFilters: any) => {
-    setFilters(newFilters);
-  };
-
-  // 검색 버튼 클릭 시 실행되는 함수
-  const handleSearch = () => {
-    if (searchTerm.trim() || hasActiveFilters()) {
-      // URL 쿼리 생성
-      let query = searchTerm.trim() ? `?q=${encodeURIComponent(searchTerm.trim())}` : "?";
-      
-      // 필터 조건 추가
-      Object.entries(filters).forEach(([key, value]) => {
-        if (value) {
-          // 첫 번째 파라미터인 경우 ? 대신 & 사용
-          const separator = query === "?" ? "" : "&";
-          query += `${separator}${key}=${encodeURIComponent(value as string)}`;
+  useEffect(() => {
+    async function fetchInitialData() {
+      try {
+        setLoading(true);
+        
+        // 먼저 프랜차이즈 조회
+        const franchisesResponse = await fetch('/api/franchises');
+        if (!franchisesResponse.ok) {
+          throw new Error('프랜차이즈 정보를 가져오는 데 실패했습니다.');
         }
-      });
-      
-      // 검색 결과 페이지로 이동 (Next.js에서는 router.push 사용)
-      router.push(`/search${query}`);
+        const franchisesData = await franchisesResponse.json();
+        setFranchises(franchisesData);
+        
+        // 다음으로 카테고리 조회
+        const categoriesResponse = await fetch('/api/categories');
+        if (!categoriesResponse.ok) {
+          throw new Error('카테고리 정보를 가져오는 데 실패했습니다.');
+        }
+        const categoriesData = await categoriesResponse.json();
+        
+        // 프랜차이즈가 있는 카테고리만 필터링
+        const filteredCategories = categoriesData.filter((cat: any) => {
+          return franchisesData.some((franchise: any) => franchise.categoryId === cat.id);
+        });
+        
+        setCategories(filteredCategories);
+      } catch (error) {
+        console.error('초기 데이터 조회 오류:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchInitialData();
+  }, []);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
     }
   };
 
-  // 필터가 하나라도 활성화되어 있는지 확인
-  const hasActiveFilters = () => {
-    return Object.values(filters).some(value => value !== "");
+  const handleCategoryClick = (categoryId: number) => {
+    router.push(`/search?categoryId=${categoryId}`);
+  };
+
+  const handleFranchiseClick = (franchiseId: number) => {
+    router.push(`/franchises/${franchiseId}`);
   };
 
   return (
-    <>
-      {/* 히어로 섹션 */}
-      <div className="mb-8 p-8 bg-gradient-to-r from-primary/5 to-primary/20 rounded-2xl">
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="text-lg mb-6 text-gray-700">
-            다양한 프랜차이즈 메뉴의 영양성분을 검색하고 비교해보세요
+    <div className="container mx-auto px-4 py-6">
+      <section className="mb-10">
+        <div className="bg-gradient-to-br from-pink-200 to-pink-100 rounded-xl p-6 md:p-8 mb-6">
+          <h1 className="text-2xl md:text-3xl font-bold mb-4 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+            한국 프랜차이즈 영양정보
+          </h1>
+          <p className="text-gray-700 mb-6">
+            한국 프랜차이즈 음식의 영양정보를 쉽게 검색하고 비교해보세요.
           </p>
           
-          {/* Search Bar */}
-          <div className="relative max-w-xl mx-auto">
+          <form onSubmit={handleSearch} className="flex w-full">
             <input
               type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="메뉴 이름 또는 프랜차이즈로 검색"
-              className="w-full pr-10 pl-4 py-2 border-2 border-primary/20 focus:border-primary/50 rounded-full"
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="메뉴 또는 프랜차이즈 검색..."
+              className="flex-1 p-3 rounded-l-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500"
             />
-            <button 
-              onClick={handleSearch}
-              className="absolute right-0 top-0 h-full rounded-r-full text-primary/80 hover:text-primary hover:bg-primary/5 px-3"
+            <button
+              type="submit"
+              className="bg-gradient-to-r from-pink-500 to-pink-600 text-white p-3 rounded-r-lg hover:opacity-90 transition-opacity"
             >
-              🔍
+              검색
             </button>
-          </div>
+          </form>
         </div>
-      </div>
+      </section>
       
-      {/* 필터 컴포넌트는 마이그레이션 이후 추가 예정 */}
-      {/* <FilterBar onFilterChange={handleFilterChange} /> */}
-      
-      {/* 필터 적용 검색 버튼 */}
-      {hasActiveFilters() && (
-        <div className="mb-8 text-center">
-          <button 
-            onClick={handleSearch}
-            className="px-6 py-2 bg-primary hover:bg-primary-600 text-white rounded-full shadow-md flex items-center justify-center mx-auto"
-          >
-            🔍 필터 적용하여 검색
-          </button>
+      {loading ? (
+        <div className="text-center p-12">
+          <p className="text-gray-500">데이터를 불러오는 중...</p>
         </div>
+      ) : (
+        <>
+          {/* 카테고리 섹션 */}
+          <section className="mb-10">
+            <h2 className="text-xl font-bold mb-4">카테고리</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {categories.map((category) => (
+                <div
+                  key={category.id}
+                  className="aspect-square bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer p-4 flex flex-col items-center justify-center text-center"
+                  onClick={() => handleCategoryClick(category.id)}
+                >
+                  <div className="text-lg font-semibold">{category.nameKorean || category.name}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+          
+          {/* 인기 프랜차이즈 섹션 */}
+          <section>
+            <h2 className="text-xl font-bold mb-4">인기 프랜차이즈</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {franchises.slice(0, 10).map((franchise) => (
+                <div
+                  key={franchise.id}
+                  className="aspect-square bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer p-4 flex flex-col items-center justify-center text-center"
+                  onClick={() => handleFranchiseClick(franchise.id)}
+                >
+                  <div className="text-lg font-semibold">{franchise.name}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </>
       )}
-      
-      {/* 카테고리 그리드는 마이그레이션 이후 추가 예정 */}
-      {/* <CategoryGrid /> */}
-      
-      {/* 광고 컴포넌트는 마이그레이션 이후 추가 예정 */}
-      {/* <ResponsiveAd /> */}
-    </>
+    </div>
   );
 }
