@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { FilterBar } from "@/components/ui/filter-bar";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { ProductList } from "@/components/product-list";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent } from "@/components/ui/card";
 import { BannerAd, ResponsiveAd } from "@/components/ui/advertisement";
 import { useSearchParams } from "@/hooks/use-search-params";
 
@@ -17,12 +18,21 @@ export default function Products({ params }: ProductsProps) {
   const franchiseId = parseInt(params.franchiseId);
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   
   // URL에서 필터 파라미터 추출
   const calorieRange = searchParams.get("calorieRange") || "0";
   const proteinRange = searchParams.get("proteinRange") || "0";
   const carbsRange = searchParams.get("carbsRange") || "0";
   const fatRange = searchParams.get("fatRange") || "0";
+
+  // 현재 활성화된 필터들을 상태로 관리
+  const [activeFilters, setActiveFilters] = useState({
+    calorieRange,
+    proteinRange,
+    carbsRange,
+    fatRange
+  });
   
   // Fetch franchise details
   const { data: franchise, isLoading: franchiseLoading } = useQuery({
@@ -37,14 +47,70 @@ export default function Products({ params }: ProductsProps) {
     enabled: !!franchise?.categoryId,
   });
   
-  // 필터 변경 시 제품 쿼리 무효화 처리
-  const handleFilterChange = () => {
-    // 제품 쿼리와 검색 쿼리 모두 무효화하여 새로운 필터로 다시 로드하게 함
-    queryClient.invalidateQueries({ queryKey: ['/api/products', { franchiseId }] });
-    queryClient.invalidateQueries({ queryKey: ['/api/search'] });
+  // Fetch products for this franchise
+  const { data: products, isLoading: productsLoading } = useQuery({
+    queryKey: ['/api/search', { franchiseId }],
+    queryFn: async () => {
+      const res = await fetch(`/api/search?franchiseId=${franchiseId}`);
+      if (!res.ok) {
+        console.error('제품 로드 오류:', res.status);
+        return [];
+      }
+      return res.json();
+    }
+  });
+  
+  // 필터 변경 시 클라이언트 측에서 필터링 로직 적용
+  const handleFilterChange = useCallback((newFilters: any) => {
+    console.log("필터 변경됨:", newFilters);
+    setActiveFilters(newFilters);
+  }, []);
+  
+  // 필터에 따라 제품 필터링 적용
+  useEffect(() => {
+    if (!products || !Array.isArray(products)) {
+      setFilteredProducts([]);
+      return;
+    }
     
-    console.log("필터 변경됨: 제품 및 검색 쿼리 무효화");
-  };
+    console.log(`브랜드 상세 - 필터링 전 제품 수: ${products.length}`);
+    let filtered = [...products];
+    
+    // 칼로리 필터 적용 (이하)
+    if (activeFilters.calorieRange && parseInt(activeFilters.calorieRange) > 0) {
+      filtered = filtered.filter(p => 
+        p.calories !== null && p.calories <= parseInt(activeFilters.calorieRange)
+      );
+      console.log(`칼로리 필터 (${activeFilters.calorieRange}kcal 이하) 적용 후: ${filtered.length}개`);
+    }
+    
+    // 단백질 필터 적용 (이상)
+    if (activeFilters.proteinRange && parseInt(activeFilters.proteinRange) > 0) {
+      filtered = filtered.filter(p => 
+        p.protein !== null && p.protein >= parseInt(activeFilters.proteinRange)
+      );
+      console.log(`단백질 필터 (${activeFilters.proteinRange}g 이상) 적용 후: ${filtered.length}개`);
+    }
+    
+    // 탄수화물 필터 적용 (이하)
+    if (activeFilters.carbsRange && parseInt(activeFilters.carbsRange) > 0) {
+      filtered = filtered.filter(p => 
+        p.carbs !== null && p.carbs <= parseInt(activeFilters.carbsRange)
+      );
+      console.log(`탄수화물 필터 (${activeFilters.carbsRange}g 이하) 적용 후: ${filtered.length}개`);
+    }
+    
+    // 지방 필터 적용 (이하)
+    if (activeFilters.fatRange && parseInt(activeFilters.fatRange) > 0) {
+      filtered = filtered.filter(p => 
+        p.fat !== null && p.fat <= parseInt(activeFilters.fatRange)
+      );
+      console.log(`지방 필터 (${activeFilters.fatRange}g 이하) 적용 후: ${filtered.length}개`);
+    }
+    
+    console.log(`브랜드 상세 - 최종 필터링 결과: ${filtered.length}개 제품`);
+    setFilteredProducts(filtered);
+  }, [products, activeFilters]);
   
   // Scroll to top on page load
   useEffect(() => {
@@ -85,16 +151,37 @@ export default function Products({ params }: ProductsProps) {
       {/* 제품 목록 위 광고 배너 */}
       <BannerAd className="my-4" />
       
-      {/* URL 파라미터를 명시적으로 초기 필터로 전달 */}
-      <ProductList 
-        franchiseId={franchiseId} 
-        initialFilters={{
-          calorieRange,
-          proteinRange,
-          carbsRange,
-          fatRange
-        }}
-      />
+      {/* 필터링된 제품 목록 전달 */}
+      {productsLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(9)].map((_, i) => (
+            <Card key={i} className="shadow-sm">
+              <CardContent className="p-4">
+                <Skeleton className="h-5 w-40 mb-2" />
+                <Skeleton className="h-4 w-full mb-1" />
+                <Skeleton className="h-4 w-3/4 mb-4" />
+                <div className="grid grid-cols-2 gap-2">
+                  <Skeleton className="h-3 w-20" />
+                  <Skeleton className="h-3 w-20" />
+                  <Skeleton className="h-3 w-20" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <ProductList 
+          franchiseId={franchiseId} 
+          initialFilters={{
+            calorieRange,
+            proteinRange,
+            carbsRange,
+            fatRange
+          }}
+          products={filteredProducts} // 필터링된 제품 전달
+        />
+      )}
       
       {/* 제품 목록 아래 반응형 광고 */}
       <div className="mt-10">
