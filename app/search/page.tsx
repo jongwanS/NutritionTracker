@@ -33,7 +33,7 @@ export default function SearchResults() {
         setLoading(true);
         
         // 검색 쿼리 생성
-        let searchUrl = `/api/products?query=${encodeURIComponent(query)}`;
+        let searchUrl = `/api/search?q=${encodeURIComponent(query)}`;
         
         // 카테고리 파라미터 추가
         if (categoryId) {

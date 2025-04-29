@@ -43,7 +43,7 @@ export default function FranchiseDetail() {
         setFranchise(franchiseData);
         
         // 프랜차이즈 제품 목록 조회
-        const productsResponse = await fetch(`/api/products?franchiseId=${id}`);
+        const productsResponse = await fetch(`/api/search?franchiseId=${id}`);
         if (!productsResponse.ok) {
           throw new Error('제품 목록을 가져오는 데 실패했습니다.');
         }
@@ -63,45 +63,73 @@ export default function FranchiseDetail() {
   
   // 필터 변경 시 제품 필터링
   useEffect(() => {
-    if (!allProducts.length) return;
-    
-    // 클라이언트 사이드에서 필터링
-    let results = [...allProducts];
-    
-    // 칼로리 필터
-    if (filters.calorieRange !== '0') {
-      const maxCalories = parseInt(filters.calorieRange);
-      results = results.filter(product => 
-        !product.calories || product.calories <= maxCalories
-      );
+    async function fetchFilteredProducts() {
+      if (!franchise) return;
+      
+      setLoading(true);
+      try {
+        // API를 통한 서버 사이드 필터링
+        let filterUrl = `/api/search?franchiseId=${id}`;
+        
+        // 필터 파라미터 추가
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value && value !== '0') {
+            filterUrl += `&${key}=${encodeURIComponent(value as string)}`;
+          }
+        });
+        
+        const response = await fetch(filterUrl);
+        if (!response.ok) {
+          throw new Error('필터링 결과를 가져오는 데 실패했습니다.');
+        }
+        
+        const data = await response.json();
+        setFilteredProducts(data);
+      } catch (error) {
+        console.error('필터링 오류:', error);
+        // 오류 발생 시 기존 데이터로 클라이언트 사이드 필터링 대체
+        let results = [...allProducts];
+        
+        // 칼로리 필터
+        if (filters.calorieRange !== '0') {
+          const maxCalories = parseInt(filters.calorieRange);
+          results = results.filter(product => 
+            !product.calories || product.calories <= maxCalories
+          );
+        }
+        
+        // 단백질 필터 (특별 케이스: 이상 조건)
+        if (filters.proteinRange !== '0') {
+          const minProtein = parseInt(filters.proteinRange);
+          results = results.filter(product => 
+            product.protein && product.protein >= minProtein
+          );
+        }
+        
+        // 탄수화물 필터
+        if (filters.carbsRange !== '0') {
+          const maxCarbs = parseInt(filters.carbsRange);
+          results = results.filter(product => 
+            !product.carbs || product.carbs <= maxCarbs
+          );
+        }
+        
+        // 지방 필터
+        if (filters.fatRange !== '0') {
+          const maxFat = parseInt(filters.fatRange);
+          results = results.filter(product => 
+            !product.fat || product.fat <= maxFat
+          );
+        }
+        
+        setFilteredProducts(results);
+      } finally {
+        setLoading(false);
+      }
     }
     
-    // 단백질 필터 (특별 케이스: 이상 조건)
-    if (filters.proteinRange !== '0') {
-      const minProtein = parseInt(filters.proteinRange);
-      results = results.filter(product => 
-        product.protein && product.protein >= minProtein
-      );
-    }
-    
-    // 탄수화물 필터
-    if (filters.carbsRange !== '0') {
-      const maxCarbs = parseInt(filters.carbsRange);
-      results = results.filter(product => 
-        !product.carbs || product.carbs <= maxCarbs
-      );
-    }
-    
-    // 지방 필터
-    if (filters.fatRange !== '0') {
-      const maxFat = parseInt(filters.fatRange);
-      results = results.filter(product => 
-        !product.fat || product.fat <= maxFat
-      );
-    }
-    
-    setFilteredProducts(results);
-  }, [allProducts, filters]);
+    fetchFilteredProducts();
+  }, [id, franchise, filters, allProducts]);
   
   // 필터 변경 핸들러
   const handleFilterChange = (newFilters: any) => {
