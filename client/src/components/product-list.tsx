@@ -20,11 +20,18 @@ interface ProductListProps {
   };
 }
 
-export function ProductList({ franchiseId }: ProductListProps) {
+export function ProductList({ franchiseId, initialFilters }: ProductListProps) {
   const [, navigate] = useLocation();
   const [searchParams] = useSearchParams();
   const [favoriteProducts, setFavoriteProducts] = useState<number[]>([]);
   const { toast } = useToast();
+  
+  // initialFilters 로그
+  useEffect(() => {
+    if (initialFilters) {
+      console.log("초기 필터 값 수신:", initialFilters);
+    }
+  }, [initialFilters]);
   
   // 로컬 스토리지에서 좋아요 상태 로드
   useEffect(() => {
@@ -59,11 +66,12 @@ export function ProductList({ franchiseId }: ProductListProps) {
     };
   }, []);
   
-  // Get filter params from URL
-  const calorieRange = searchParams.get("calorieRange") || "";
-  const proteinRange = searchParams.get("proteinRange") || "";
-  const carbsRange = searchParams.get("carbsRange") || "";
-  const fatRange = searchParams.get("fatRange") || "";
+  // 필터 값 가져오기 (초기 필터 또는 URL 파라미터)
+  // 초기 필터가 있으면 그 값을 우선 사용하고, 없으면 URL에서 가져옴
+  const calorieRange = initialFilters?.calorieRange || searchParams.get("calorieRange") || "";
+  const proteinRange = initialFilters?.proteinRange || searchParams.get("proteinRange") || "";
+  const carbsRange = initialFilters?.carbsRange || searchParams.get("carbsRange") || "";
+  const fatRange = initialFilters?.fatRange || searchParams.get("fatRange") || "";
   
   // URL에서 필터 파라미터 실시간 로그 (디버깅용)
   console.log("현재 URL 필터 파라미터:", {
