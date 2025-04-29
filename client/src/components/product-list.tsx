@@ -16,9 +16,10 @@ interface ProductListProps {
     carbsRange: string;
     fatRange: string;
   };
+  products?: any[]; // 미리 필터링된 제품 목록을 전달받기 위한 prop
 }
 
-export function ProductList({ franchiseId, initialFilters }: ProductListProps) {
+export function ProductList({ franchiseId, initialFilters, products: filteredProducts }: ProductListProps) {
   const [, navigate] = useLocation();
   const [favoriteProducts, setFavoriteProducts] = useState<number[]>([]);
   const { toast } = useToast();
@@ -196,7 +197,8 @@ export function ProductList({ franchiseId, initialFilters }: ProductListProps) {
     return allergenIds.map(id => allergens.find((a: any) => a.id === id)?.nameKorean).filter(Boolean);
   };
   
-  if (isLoading) {
+  // filteredProducts가 제공된 경우에는 로딩 상태를 보여주지 않음
+  if (isLoading && !filteredProducts) {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {Array.from({ length: 8 }).map((_, index) => (
@@ -218,7 +220,8 @@ export function ProductList({ franchiseId, initialFilters }: ProductListProps) {
     );
   }
   
-  if (products?.length === 0) {
+  // 내부적으로 로드한 제품이나 외부에서 전달받은 필터링된 제품이 없는 경우 처리
+  if ((filteredProducts && filteredProducts.length === 0) || (!filteredProducts && products?.length === 0)) {
     return (
       <div className="text-center py-10 bg-pink-50/50 rounded-lg p-8">
         <Flame className="w-12 h-12 text-pink-300 mx-auto mb-4 opacity-50" />
@@ -228,11 +231,11 @@ export function ProductList({ franchiseId, initialFilters }: ProductListProps) {
     );
   }
   
-  // 먼저 products가 배열인지 확인하고 필요한 경우 클라이언트 측에서 필터링
-  let productArray = Array.isArray(products) ? products : [];
+  // 외부에서 전달된 필터링된 제품 목록이 있으면 사용
+  let productArray = filteredProducts || (Array.isArray(products) ? products : []);
   
-  // 클라이언트 측 필터링 적용 (서버 필터링이 작동하지 않을 경우를 대비)
-  if (productArray.length > 0) {
+  // 외부에서 제품 목록이 제공되지 않은 경우에만 클라이언트 측 필터링 적용
+  if (!filteredProducts && productArray.length > 0) {
     // 칼로리 필터 (이하)
     if (calorieRange && calorieRange !== "0") {
       productArray = productArray.filter(product => 
