@@ -1,9 +1,9 @@
-import { storage } from '../../../server/storage';
 import { NextResponse } from 'next/server';
+import { getCategories } from '../../lib/data';
 
 export async function GET() {
   try {
-    const categories = await storage.getCategories();
+    const categories = await getCategories();
     return NextResponse.json(categories);
   } catch (error) {
     console.error('카테고리 조회 오류:', error);

@@ -1,45 +1,49 @@
-import { storage } from '../../../server/storage';
 import { NextResponse } from 'next/server';
+import { getProducts, getProductsByFranchise, searchProducts } from '../../lib/data';
 import { ProductSearchParams } from '../../../shared/schema';
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const query = searchParams.get('query') || '';
-    const categoryId = searchParams.get('categoryId') ? parseInt(searchParams.get('categoryId')!) : undefined;
     const franchiseId = searchParams.get('franchiseId') ? parseInt(searchParams.get('franchiseId')!) : undefined;
     
-    // 영양성분 필터 파싱
-    const calorieRange = searchParams.get('calorieRange') || '0';
-    const proteinRange = searchParams.get('proteinRange') || '0';
-    const carbsRange = searchParams.get('carbsRange') || '0';
-    const fatRange = searchParams.get('fatRange') || '0';
+    // 프랜차이즈 ID가 있으면 해당 프랜차이즈의 제품만 조회
+    if (franchiseId) {
+      const products = await getProductsByFranchise(franchiseId);
+      return NextResponse.json(products);
+    }
     
-    // 범위 값을 기반으로 min/max 값 설정 (임시 변환)
-    // 나중에 실제 schema.ts에 맞게 정확히 수정 필요
-    const [minCalories, maxCalories] = calorieRange !== '0' ? [0, parseInt(calorieRange)] : [undefined, undefined];
-    const [minProtein, maxProtein] = proteinRange !== '0' ? [parseInt(proteinRange), undefined] : [undefined, undefined];
-    const [minCarbs, maxCarbs] = carbsRange !== '0' ? [0, parseInt(carbsRange)] : [undefined, undefined];
-    const [minFat, maxFat] = fatRange !== '0' ? [0, parseInt(fatRange)] : [undefined, undefined];
+    // 검색 파라미터가 있으면 검색 실행
+    if (searchParams.get('query') || searchParams.get('categoryId') || 
+        searchParams.get('calorieRange') || searchParams.get('proteinRange') || 
+        searchParams.get('carbsRange') || searchParams.get('fatRange')) {
+          
+      const query = searchParams.get('query') || undefined;
+      const categoryId = searchParams.get('categoryId') ? parseInt(searchParams.get('categoryId')!) : undefined;
+      const calorieRange = searchParams.get('calorieRange') || undefined;
+      const proteinRange = searchParams.get('proteinRange') || undefined;
+      const carbsRange = searchParams.get('carbsRange') || undefined;
+      const fatRange = searchParams.get('fatRange') || undefined;
+      
+      const params = {
+        query,
+        categoryId,
+        franchiseId,
+        calorieRange,
+        proteinRange,
+        carbsRange,
+        fatRange
+      };
+      
+      const products = await searchProducts(params);
+      return NextResponse.json(products);
+    }
     
-    const searchParams2: ProductSearchParams = {
-      query: query || undefined,
-      categoryId,
-      franchiseId,
-      minCalories,
-      maxCalories,
-      minProtein,
-      maxProtein,
-      minCarbs,
-      maxCarbs,
-      minFat,
-      maxFat
-    };
-    
-    const products = await storage.searchProducts(searchParams2);
+    // 기본적으로 모든 제품 조회
+    const products = await getProducts();
     return NextResponse.json(products);
   } catch (error) {
-    console.error('제품 검색 오류:', error);
-    return NextResponse.json({ error: '제품 검색 중 오류가 발생했습니다.' }, { status: 500 });
+    console.error('제품 조회 오류:', error);
+    return NextResponse.json({ error: '제품 정보를 가져오는 중 오류가 발생했습니다.' }, { status: 500 });
   }
 }

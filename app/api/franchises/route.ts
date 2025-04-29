@@ -1,5 +1,5 @@
-import { storage } from '../../../server/storage';
 import { NextResponse } from 'next/server';
+import { getFranchises, getFranchisesByCategory } from '../../lib/data';
 
 export async function GET(request: Request) {
   try {
@@ -8,11 +8,11 @@ export async function GET(request: Request) {
     
     if (categoryId) {
       // 특정 카테고리에 속한 프랜차이즈 조회
-      const franchises = await storage.getFranchisesByCategory(categoryId);
+      const franchises = await getFranchisesByCategory(categoryId);
       return NextResponse.json(franchises);
     } else {
       // 모든 프랜차이즈 조회
-      const franchises = await storage.getFranchises();
+      const franchises = await getFranchises();
       return NextResponse.json(franchises);
     }
   } catch (error) {
