@@ -135,7 +135,7 @@ export default function ProductDetail() {
           <div className="bg-pink-50 rounded-lg p-3 mb-4">
             <p className="text-sm text-pink-800">
               기본 영양정보는 100g 당 기준입니다.
-              {product.weight && (
+              {product.weight && product.weight > 0 && (
                 <span className="font-medium"> 총 중량: {product.weight}g</span>
               )}
             </p>
@@ -145,7 +145,7 @@ export default function ProductDetail() {
             <div className="border rounded-lg p-3 bg-gradient-to-br from-white to-pink-50">
               <p className="text-sm font-medium text-gray-600">칼로리</p>
               <p className="text-lg font-semibold">{product.calories || "-"} kcal / 100g</p>
-              {product.weight && (
+              {product.weight && product.weight > 0 && (
                 <p className="text-sm text-pink-600 mt-1">
                   총 {calculateTotalNutrition(product.calories, product.weight)} kcal
                 </p>
@@ -155,7 +155,7 @@ export default function ProductDetail() {
             <div className="border rounded-lg p-3 bg-gradient-to-br from-white to-pink-50">
               <p className="text-sm font-medium text-gray-600">단백질</p>
               <p className="text-lg font-semibold">{product.protein || "-"} g / 100g</p>
-              {product.weight && (
+              {product.weight && product.weight > 0 && (
                 <p className="text-sm text-pink-600 mt-1">
                   총 {calculateTotalNutrition(product.protein, product.weight)} g
                 </p>
@@ -165,7 +165,7 @@ export default function ProductDetail() {
             <div className="border rounded-lg p-3 bg-gradient-to-br from-white to-pink-50">
               <p className="text-sm font-medium text-gray-600">탄수화물</p>
               <p className="text-lg font-semibold">{product.carbs || "-"} g / 100g</p>
-              {product.weight && (
+              {product.weight && product.weight > 0 && (
                 <p className="text-sm text-pink-600 mt-1">
                   총 {calculateTotalNutrition(product.carbs, product.weight)} g
                 </p>
@@ -175,7 +175,7 @@ export default function ProductDetail() {
             <div className="border rounded-lg p-3 bg-gradient-to-br from-white to-pink-50">
               <p className="text-sm font-medium text-gray-600">지방</p>
               <p className="text-lg font-semibold">{product.fat || "-"} g / 100g</p>
-              {product.weight && (
+              {product.weight && product.weight > 0 && (
                 <p className="text-sm text-pink-600 mt-1">
                   총 {calculateTotalNutrition(product.fat, product.weight)} g
                 </p>
