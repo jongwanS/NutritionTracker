@@ -427,8 +427,7 @@ export default function SearchResults() {
       <FilterBar onFilterChange={handleFilterChange} />
       
       {/* 검색 필터 아래 광고 배너 */}
-      <BannerAd className="my-6" />
-      
+
       <div className="mb-8 mt-6">
         <div className="flex items-center justify-between mb-4">
           <p className="text-gray-600 bg-pink-50/60 py-2 px-4 rounded-lg inline-block border border-pink-100 shadow-sm">
