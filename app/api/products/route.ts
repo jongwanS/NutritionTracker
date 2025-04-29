@@ -15,18 +15,25 @@ export async function GET(request: Request) {
     const carbsRange = searchParams.get('carbsRange') || '0';
     const fatRange = searchParams.get('fatRange') || '0';
     
-    const nutritionalFilter = {
-      calorieRange,
-      proteinRange,
-      carbsRange,
-      fatRange
-    };
+    // 범위 값을 기반으로 min/max 값 설정 (임시 변환)
+    // 나중에 실제 schema.ts에 맞게 정확히 수정 필요
+    const [minCalories, maxCalories] = calorieRange !== '0' ? [0, parseInt(calorieRange)] : [undefined, undefined];
+    const [minProtein, maxProtein] = proteinRange !== '0' ? [parseInt(proteinRange), undefined] : [undefined, undefined];
+    const [minCarbs, maxCarbs] = carbsRange !== '0' ? [0, parseInt(carbsRange)] : [undefined, undefined];
+    const [minFat, maxFat] = fatRange !== '0' ? [0, parseInt(fatRange)] : [undefined, undefined];
     
     const searchParams2: ProductSearchParams = {
       query: query || undefined,
       categoryId,
       franchiseId,
-      nutritionalFilter
+      minCalories,
+      maxCalories,
+      minProtein,
+      maxProtein,
+      minCarbs,
+      maxCarbs,
+      minFat,
+      maxFat
     };
     
     const products = await storage.searchProducts(searchParams2);

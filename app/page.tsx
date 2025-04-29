@@ -70,14 +70,12 @@ export default function Home() {
               className="w-full pr-10 pl-4 py-2 border-2 border-primary/20 focus:border-primary/50 rounded-full"
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             />
-            <Button 
+            <button 
               onClick={handleSearch}
-              size="icon" 
-              variant="ghost" 
-              className="absolute right-0 top-0 h-full rounded-r-full text-primary/80 hover:text-primary hover:bg-primary/5"
+              className="absolute right-0 top-0 h-full rounded-r-full text-primary/80 hover:text-primary hover:bg-primary/5 px-3"
             >
-              <Search className="h-5 w-5" />
-            </Button>
+              🔍
+            </button>
           </div>
         </div>
       </div>
@@ -88,13 +86,12 @@ export default function Home() {
       {/* 필터 적용 검색 버튼 */}
       {hasActiveFilters() && (
         <div className="mb-8 text-center">
-          <Button 
+          <button 
             onClick={handleSearch}
             className="px-6 py-2 bg-primary hover:bg-primary-600 text-white rounded-full shadow-md flex items-center justify-center mx-auto"
           >
-            <Search className="h-4 w-4 mr-2" />
-            필터 적용하여 검색
-          </Button>
+            🔍 필터 적용하여 검색
+          </button>
         </div>
       )}
       
