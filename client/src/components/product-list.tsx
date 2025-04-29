@@ -22,7 +22,7 @@ interface ProductListProps {
 
 export function ProductList({ franchiseId, initialFilters }: ProductListProps) {
   const [, navigate] = useLocation();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [favoriteProducts, setFavoriteProducts] = useState<number[]>([]);
   const { toast } = useToast();
   
@@ -93,14 +93,38 @@ export function ProductList({ franchiseId, initialFilters }: ProductListProps) {
   
   // 컴포넌트 마운트 시 한번 로그 기록
   useEffect(() => {
+    // 초기 필터가 있을 경우 로그 기록
     console.log("ProductList 컴포넌트 마운트, 현재 필터:", {
       franchiseId,
       calorieRange: calorieRange || "없음",
       proteinRange: proteinRange || "없음",
       carbsRange: carbsRange || "없음",
-      fatRange: fatRange || "없음"
+      fatRange: fatRange || "없음",
+      initialFilters: initialFilters ? "있음" : "없음"
     });
-  }, []);
+    
+    // URL에 필터가 있는 경우 searchParams에 직접 반영 (URL 우선 적용)
+    if (initialFilters) {
+      const hasActiveFilter = Object.values(initialFilters).some(value => value !== "0" && value !== "");
+      if (hasActiveFilter) {
+        console.log("초기 필터 값이 있어 URL 업데이트:", initialFilters);
+        const newParams = new URLSearchParams(searchParams);
+        
+        // 초기 필터 값을 URL 파라미터에 설정
+        Object.entries(initialFilters).forEach(([key, value]) => {
+          if (value && value !== "0") {
+            newParams.set(key, value);
+          }
+        });
+        
+        // URL 업데이트 (이 부분은 한 번만 실행되어야 함)
+        if (JSON.stringify(newParams) !== JSON.stringify(searchParams)) {
+          // URL 파라미터 업데이트
+          setSearchParams(newParams);
+        }
+      }
+    }
+  }, [franchiseId, initialFilters, searchParams, setSearchParams]);
 
   // Fetch products by franchise with filters
   const { data: products, isLoading, error } = useQuery({
