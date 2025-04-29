@@ -191,7 +191,7 @@ export default function FranchiseDetail() {
           
           {filteredProducts.length > 0 ? (
             viewMode === 'grid' ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-1">
                 {filteredProducts.map((product: any) => (
                   <ProductCard key={product.id} product={product} />
                 ))}

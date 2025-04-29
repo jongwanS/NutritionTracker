@@ -165,7 +165,7 @@ export default function SearchResults() {
             </div>
           ) : products.length > 0 ? (
             viewMode === 'grid' ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-1">
                 {products.map((product: any) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
