@@ -63,32 +63,34 @@ export default function ProductCard({ product, listView = false }: ProductCardPr
   
   return (
     <div 
-      className="bg-white rounded-lg border p-4 hover:shadow-md transition-shadow cursor-pointer h-full flex flex-col"
+      className="bg-white rounded-lg border p-3 hover:shadow-md transition-shadow cursor-pointer h-full flex flex-col"
       onClick={handleClick}
     >
-      <h3 className="font-semibold mb-1 line-clamp-2 h-14">{product.name}</h3>
-      <p className="text-gray-600 text-sm mb-3">{product.franchise}</p>
+      <div className="mb-2">
+        <h3 className="font-semibold text-sm line-clamp-2 min-h-[40px]">{product.name}</h3>
+        <p className="text-gray-600 text-xs">{product.franchise}</p>
+      </div>
       
-      <div className="grid grid-cols-2 gap-3 text-sm mt-auto">
-        <div className="bg-gray-50 p-2 rounded">
-          <p className="text-xs text-gray-500">칼로리</p>
-          <p className="font-medium">{renderNutritionValue(product.calories)} kcal</p>
+      <div className="grid grid-cols-2 gap-2 text-xs mt-auto">
+        <div className="bg-gray-50 p-1.5 rounded flex flex-col items-center">
+          <p className="text-[10px] text-gray-500">칼로리</p>
+          <p className="font-medium truncate">{renderNutritionValue(product.calories)} kcal</p>
         </div>
-        <div className="bg-gray-50 p-2 rounded">
-          <p className="text-xs text-gray-500">단백질</p>
-          <p className="font-medium">{renderNutritionValue(product.protein)}g</p>
+        <div className="bg-gray-50 p-1.5 rounded flex flex-col items-center">
+          <p className="text-[10px] text-gray-500">단백질</p>
+          <p className="font-medium truncate">{renderNutritionValue(product.protein)}g</p>
         </div>
-        <div className="bg-gray-50 p-2 rounded">
-          <p className="text-xs text-gray-500">탄수화물</p>
-          <p className="font-medium">{renderNutritionValue(product.carbs)}g</p>
+        <div className="bg-gray-50 p-1.5 rounded flex flex-col items-center">
+          <p className="text-[10px] text-gray-500">탄수화물</p>
+          <p className="font-medium truncate">{renderNutritionValue(product.carbs)}g</p>
         </div>
-        <div className="bg-gray-50 p-2 rounded">
-          <p className="text-xs text-gray-500">지방</p>
-          <p className="font-medium">{renderNutritionValue(product.fat)}g</p>
+        <div className="bg-gray-50 p-1.5 rounded flex flex-col items-center">
+          <p className="text-[10px] text-gray-500">지방</p>
+          <p className="font-medium truncate">{renderNutritionValue(product.fat)}g</p>
         </div>
       </div>
       
-      <div className="mt-3 text-xs text-gray-500">
+      <div className="mt-2 text-[10px] text-gray-500 text-center">
         <span>100g 당 영양성분</span>
       </div>
     </div>
