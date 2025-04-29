@@ -637,13 +637,7 @@ export default function SearchResults() {
                     
                     <h3 className="text-lg font-heading font-semibold mb-2 gradient-text">{product.name}</h3>
                     
-                    {product.allergens && product.allergens.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mb-3">
-                        {getAllergenNames(product.allergens as number[]).map((allergen, idx) => (
-                          <AllergyBadge key={idx} name={allergen as string} />
-                        ))}
-                      </div>
-                    )}
+                    {/* 알러지 정보 삭제됨 */}
                   </div>
                   
                   <div className="w-full md:w-4/12 mt-3 md:mt-0 md:pl-4 md:border-l border-pink-50">
