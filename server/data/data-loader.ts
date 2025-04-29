@@ -91,7 +91,7 @@ const franchiseMap: { [key: string]: { id: number, categoryId: number, logoUrl: 
   "앤티앤스": { id: 8, categoryId: 1, logoUrl: "" },
   
   // 2. 치킨 카테고리
-  "BBQ": { id: 9, categoryId: 2, logoUrl: "" },
+  "비비큐": { id: 9, categoryId: 2, logoUrl: "" },
   "교촌치킨": { id: 10, categoryId: 2, logoUrl: "" },
   "굽네치킨": { id: 11, categoryId: 2, logoUrl: "" },
   "호식이두마리치킨": { id: 12, categoryId: 2, logoUrl: "" },
