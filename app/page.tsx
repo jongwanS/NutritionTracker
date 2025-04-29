@@ -103,10 +103,10 @@ export default function Home() {
               {categories.map((category) => (
                 <div
                   key={category.id}
-                  className="aspect-square bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer p-4 flex flex-col items-center justify-center text-center"
+                  className="aspect-square bg-gradient-to-br from-white to-pink-50 rounded-lg shadow-sm hover:shadow-md hover:from-pink-50 hover:to-pink-100 transition-all cursor-pointer p-4 flex flex-col items-center justify-center text-center"
                   onClick={() => handleCategoryClick(category.id)}
                 >
-                  <div className="text-lg font-semibold">{category.nameKorean || category.name}</div>
+                  <div className="text-lg font-semibold bg-gradient-to-r from-pink-600 to-pink-500 bg-clip-text text-transparent">{category.nameKorean || category.name}</div>
                 </div>
               ))}
             </div>
@@ -119,10 +119,10 @@ export default function Home() {
               {franchises.slice(0, 10).map((franchise) => (
                 <div
                   key={franchise.id}
-                  className="aspect-square bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer p-4 flex flex-col items-center justify-center text-center"
+                  className="aspect-square bg-gradient-to-br from-white to-pink-50 rounded-lg shadow-sm hover:shadow-md hover:from-pink-50 hover:to-pink-100 transition-all cursor-pointer p-4 flex flex-col items-center justify-center text-center"
                   onClick={() => handleFranchiseClick(franchise.id)}
                 >
-                  <div className="text-lg font-semibold">{franchise.name}</div>
+                  <div className="text-lg font-semibold text-pink-600">{franchise.name}</div>
                 </div>
               ))}
             </div>
