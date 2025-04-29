@@ -215,6 +215,14 @@ export async function loadProductData(): Promise<Product[]> {
       const franchiseName = franchiseFile.replace('.json', '');
       const franchiseInfo = franchiseMap[franchiseName];
       
+      // 디버깅: 파일명과 매핑 결과 출력
+      console.log(`파일명: ${franchiseFile}, 매핑 프랜차이즈: ${franchiseInfo ? franchiseInfo.id : '매핑 없음'}`);
+      
+      // 비비큐 특별 처리 디버깅
+      if (franchiseName === '비비큐') {
+        console.log('비비큐 파일 발견: ' + JSON.stringify(franchiseInfo));
+      }
+      
       // 매핑된 프랜차이즈만 처리
       if (!franchiseInfo) continue;
       
