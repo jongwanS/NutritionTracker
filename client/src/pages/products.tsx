@@ -5,6 +5,7 @@ import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { ProductList } from "@/components/product-list";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BannerAd, ResponsiveAd } from "@/components/ui/advertisement";
+import { useSearchParams } from "@/hooks/use-search-params";
 
 interface ProductsProps {
   params: {
@@ -15,6 +16,31 @@ interface ProductsProps {
 export default function Products({ params }: ProductsProps) {
   const franchiseId = parseInt(params.franchiseId);
   const queryClient = useQueryClient();
+  const [searchParams] = useSearchParams();
+  
+  // URL에서 필터 파라미터 추출
+  const calorieRange = searchParams.get("calorieRange") || "0";
+  const proteinRange = searchParams.get("proteinRange") || "0";
+  const carbsRange = searchParams.get("carbsRange") || "0";
+  const fatRange = searchParams.get("fatRange") || "0";
+  
+  // URL 파라미터 로그
+  useEffect(() => {
+    console.log("Products 페이지 로드, URL 파라미터:", {
+      franchiseId,
+      calorieRange,
+      proteinRange,
+      carbsRange,
+      fatRange
+    });
+    
+    // URL 파라미터가 있으면 자동으로 필터 적용
+    if (calorieRange !== "0" || proteinRange !== "0" || carbsRange !== "0" || fatRange !== "0") {
+      // 기존 필터 쿼리 무효화
+      queryClient.invalidateQueries({ queryKey: ['/api/products', { franchiseId }] });
+      queryClient.invalidateQueries({ queryKey: ['/api/search'] });
+    }
+  }, []);
   
   // Fetch franchise details
   const { data: franchise, isLoading: franchiseLoading } = useQuery({
@@ -77,7 +103,16 @@ export default function Products({ params }: ProductsProps) {
       {/* 제품 목록 위 광고 배너 */}
       <BannerAd className="my-4" />
       
-      <ProductList franchiseId={franchiseId} />
+      {/* URL 파라미터를 명시적으로 초기 필터로 전달 */}
+      <ProductList 
+        franchiseId={franchiseId} 
+        initialFilters={{
+          calorieRange,
+          proteinRange,
+          carbsRange,
+          fatRange
+        }}
+      />
       
       {/* 제품 목록 아래 반응형 광고 */}
       <div className="mt-10">

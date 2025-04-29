@@ -12,6 +12,12 @@ import { Heart, AlertCircle, Flame } from "lucide-react";
 
 interface ProductListProps {
   franchiseId: number;
+  initialFilters?: {
+    calorieRange: string;
+    proteinRange: string;
+    carbsRange: string;
+    fatRange: string;
+  };
 }
 
 export function ProductList({ franchiseId }: ProductListProps) {
