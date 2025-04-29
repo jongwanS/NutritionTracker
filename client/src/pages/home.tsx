@@ -97,10 +97,7 @@ export default function Home() {
       
       <CategoryGrid />
       
-      {/* 카테고리 아래 반응형 광고 */}
-      <div className="mt-12 mb-8">
-        <ResponsiveAd />
-      </div>
+
     </>
   );
 }

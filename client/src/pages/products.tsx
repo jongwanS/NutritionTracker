@@ -148,9 +148,6 @@ export default function Products({ params }: ProductsProps) {
         )}
       </h1>
       
-      {/* 제품 목록 위 광고 배너 */}
-      <BannerAd className="my-4" />
-      
       {/* 필터링된 제품 목록 전달 */}
       {productsLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -183,10 +180,7 @@ export default function Products({ params }: ProductsProps) {
         />
       )}
       
-      {/* 제품 목록 아래 반응형 광고 */}
-      <div className="mt-10">
-        <ResponsiveAd />
-      </div>
+
     </>
   );
 }

@@ -68,17 +68,7 @@ export default function ProductDetail({ params }: ProductDetailProps) {
     <>
       <Breadcrumbs items={breadcrumbItems} />
       
-      {/* 제품 정보 위 광고 배너 */}
-      <BannerAd className="my-4" />
-      
       <ProductDetailComponent productId={productId} />
-      
-      {/* 제품 정보 아래 기사 중간 형태의 광고 */}
-      {!productLoading && product && (
-        <div className="mt-8">
-          <InArticleAd />
-        </div>
-      )}
     </>
   );
 }
