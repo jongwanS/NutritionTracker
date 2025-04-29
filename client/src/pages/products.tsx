@@ -5,7 +5,7 @@ import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { ProductList } from "@/components/product-list";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
-import { BannerAd, ResponsiveAd } from "@/components/ui/advertisement";
+
 import { useSearchParams } from "@/hooks/use-search-params";
 
 interface ProductsProps {

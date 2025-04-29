@@ -4,7 +4,7 @@ import { FilterBar } from "@/components/ui/filter-bar";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { FranchiseGrid } from "@/components/franchise-grid";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BannerAd, ResponsiveAd } from "@/components/ui/advertisement";
+
 
 interface FranchisesProps {
   params: {

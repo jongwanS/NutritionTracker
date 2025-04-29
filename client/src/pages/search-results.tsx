@@ -11,7 +11,6 @@ import { Product } from "@/types";
 import { Heart, AlertCircle, Search, Store, Grid, List, Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
 import { useToast } from "@/hooks/use-toast";
 
 export default function SearchResults() {

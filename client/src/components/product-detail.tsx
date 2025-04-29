@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { AllergyBadge } from "@/components/allergy-badge";
 import { ArrowLeft, Heart, Droplet, AlertCircle, Gauge, Flame, Store } from "lucide-react";
-import { BannerAd, ResponsiveAd } from "@/components/ui/advertisement";
+
 import { useToast } from "@/hooks/use-toast";
 
 interface ProductDetailProps {
@@ -254,11 +254,7 @@ export function ProductDetail({ productId }: ProductDetailProps) {
         </div>
       </div>
       
-      {/* Nutritional Information */}
-      {/* Ad Banner */}
-      <div className="px-6 py-3 border-t border-pink-100 bg-white">
-        <BannerAd className="w-full h-full max-h-24" />
-      </div>
+
       
       {/* Nutritional Information */}
       <div className="p-6 border-t border-pink-100 bg-gradient-to-b from-white to-pink-50/30">
@@ -532,10 +528,7 @@ export function ProductDetail({ productId }: ProductDetailProps) {
               <span className="text-pink-500 font-medium">*</span> 퍼센트 일일 권장량은 2,000 칼로리 식이요법을 기준으로 합니다. 개인 칼로리 필요량에 따라 일일 권장치는 다를 수 있습니다.
             </p>
             
-            {/* Responsive Ad */}
-            <div className="mt-6">
-              <ResponsiveAd className="mx-auto" />
-            </div>
+
           </TabsContent>
           
           <TabsContent value="per100g">

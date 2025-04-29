@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { ProductDetail as ProductDetailComponent } from "@/components/product-detail";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BannerAd, InArticleAd } from "@/components/ui/advertisement";
+
 
 interface ProductDetailProps {
   params: {
