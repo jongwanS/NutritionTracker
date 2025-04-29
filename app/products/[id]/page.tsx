@@ -210,7 +210,18 @@ export default function ProductDetail() {
             </div>
           </div>
           
-          {product.allergens && product.allergens.length > 0 && (
+          {product.allergenDetails && product.allergenDetails.length > 0 ? (
+            <div className="mt-6">
+              <h3 className="text-md font-semibold mb-2">알레르기 정보</h3>
+              <div className="flex flex-wrap gap-2">
+                {product.allergenDetails.map((allergen: any, index: number) => (
+                  <span key={index} className="bg-red-50 text-red-600 px-3 py-1 rounded-full text-xs">
+                    {allergen.nameKorean || allergen.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ) : product.allergens && product.allergens.length > 0 ? (
             <div className="mt-6">
               <h3 className="text-md font-semibold mb-2">알레르기 정보</h3>
               <div className="flex flex-wrap gap-2">
@@ -221,7 +232,7 @@ export default function ProductDetail() {
                 ))}
               </div>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

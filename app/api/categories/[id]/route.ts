@@ -1,5 +1,5 @@
-import { storage } from '../../../../server/storage';
 import { NextResponse } from 'next/server';
+import { getCategory } from '../../../lib/data';
 
 export async function GET(
   request: Request,
@@ -11,7 +11,7 @@ export async function GET(
       return NextResponse.json({ error: '유효하지 않은 카테고리 ID입니다.' }, { status: 400 });
     }
     
-    const category = await storage.getCategory(id);
+    const category = await getCategory(id);
     if (!category) {
       return NextResponse.json({ error: '해당 ID의 카테고리를 찾을 수 없습니다.' }, { status: 404 });
     }
