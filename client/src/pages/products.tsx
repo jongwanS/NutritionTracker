@@ -24,29 +24,6 @@ export default function Products({ params }: ProductsProps) {
   const carbsRange = searchParams.get("carbsRange") || "0";
   const fatRange = searchParams.get("fatRange") || "0";
   
-  // URL 파라미터 변경 감지 및 처리
-  useEffect(() => {
-    console.log("Products 페이지: URL 파라미터 변경 감지:", {
-      franchiseId,
-      calorieRange,
-      proteinRange,
-      carbsRange,
-      fatRange,
-      url: window.location.href
-    });
-    
-    // URL 파라미터가 있으면 자동으로 필터 적용
-    if (calorieRange !== "0" || proteinRange !== "0" || carbsRange !== "0" || fatRange !== "0") {
-      console.log("URL에 필터 파라미터가 있어 쿼리 무효화");
-      // 기존 필터 쿼리 무효화
-      queryClient.invalidateQueries({ queryKey: ['/api/products', { franchiseId }] });
-      queryClient.invalidateQueries({ queryKey: ['/api/search'] });
-      
-      // 필터 변경 콜백 호출하여 필터 적용
-      handleFilterChange();
-    }
-  }, [searchParams]); // searchParams 변경 시 호출되도록 의존성 배열 업데이트
-  
   // Fetch franchise details
   const { data: franchise, isLoading: franchiseLoading } = useQuery({
     queryKey: ['/api/franchises', franchiseId],

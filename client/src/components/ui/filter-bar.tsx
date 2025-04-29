@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useSearchParams } from "@/hooks/use-search-params";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -19,54 +19,27 @@ interface FilterBarProps {
 export function FilterBar({ className, onFilterChange }: FilterBarProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   
-  // URL에서 초기 필터 값 가져오기 (전역 변수로 선언하지 않고 함수로 가져옴)
-  const getInitialFilters = () => {
-    return {
-      calorieRange: searchParams.get("calorieRange") || "0",
-      proteinRange: searchParams.get("proteinRange") || "0",
-      carbsRange: searchParams.get("carbsRange") || "0",
-      fatRange: searchParams.get("fatRange") || "0"
-    };
-  };
+  // URL에서 초기 값 가져오기
+  const initialCalorieRange = searchParams.get("calorieRange") || "0";
+  const initialProteinRange = searchParams.get("proteinRange") || "0";
+  const initialCarbsRange = searchParams.get("carbsRange") || "0";
+  const initialFatRange = searchParams.get("fatRange") || "0";
   
-  // 초기 필터 상태 설정
-  const [filters, setFilters] = useState(getInitialFilters());
+  // 현재 필터 상태 관리
+  const [filters, setFilters] = useState({
+    calorieRange: initialCalorieRange,
+    proteinRange: initialProteinRange,
+    carbsRange: initialCarbsRange,
+    fatRange: initialFatRange
+  });
   
-  // URL 파라미터 변경될 때마다 필터 업데이트 (URL이 변경되면 필터도 변경)
-  useEffect(() => {
-    const urlFilters = getInitialFilters();
-    console.log("URL 파라미터 변경 감지:", urlFilters);
-    
-    // 상태 업데이트
-    setFilters(urlFilters);
-    
-    // 필터가 있다면 콜백 호출
-    const hasActiveFilter = Object.values(urlFilters).some(value => value !== "0" && value !== "");
-    if (hasActiveFilter && onFilterChange) {
-      console.log("URL 기반 필터 적용:", urlFilters);
-      onFilterChange(urlFilters);
-    }
-  }, [searchParams, onFilterChange]);
-  
-  // 컴포넌트 마운트 시 한 번만 실행, URL에 필터가 있으면 적용
-  useEffect(() => {
-    const urlFilters = getInitialFilters();
-    const hasActiveFilter = Object.values(urlFilters).some(value => value !== "0" && value !== "");
-    
-    if (hasActiveFilter) {
-      console.log("초기 마운트: URL에서 필터 발견, 적용 중:", urlFilters);
-      
-      // 콜백 호출하여 필터 적용
-      if (onFilterChange) {
-        onFilterChange(urlFilters);
-      }
-    }
-  }, []);
+  // 디버깅 로그
+  console.log("FilterBar 렌더링 - 현재 필터:", filters);
 
   // 필터 변경 처리 함수
-  const handleFilterChange = useCallback((value: string, filterName: string) => {
-    // 값이 0인 경우 필터 제거 (빈 문자열로 설정)
-    const newValue = value === "0" || value === "all" ? "" : value;
+  const handleFilterChange = useCallback((value: string, filterName: keyof typeof filters) => {
+    // 값이 0인 경우 필터 제거
+    const newValue = value === "0" ? "" : value;
     
     const updatedFilters = {
       ...filters,
@@ -76,32 +49,21 @@ export function FilterBar({ className, onFilterChange }: FilterBarProps) {
     console.log(`필터 변경: ${filterName} = ${newValue}`);
     setFilters(updatedFilters);
     
-    // 값 변경 시 즉시 콜백 호출하여 실시간 필터링
+    // URL 파라미터 업데이트
+    const newParams = new URLSearchParams(searchParams);
+    if (newValue && newValue !== "0") {
+      newParams.set(filterName, newValue);
+    } else {
+      newParams.delete(filterName);
+    }
+    setSearchParams(newParams);
+    
+    // 상위 컴포넌트에 필터 변경 알림
     if (onFilterChange) {
       console.log('필터 변경 콜백 호출:', updatedFilters);
       onFilterChange(updatedFilters);
     }
-    
-    // URL 파라미터 업데이트
-    updateUrlParams(updatedFilters);
-  }, [filters, onFilterChange]);
-
-  // URL 파라미터 업데이트 함수
-  const updateUrlParams = useCallback((currentFilters: any) => {
-    const newParams = new URLSearchParams(searchParams);
-    
-    // 필터 값 업데이트
-    Object.entries(currentFilters).forEach(([key, value]) => {
-      if (value && value !== "0") {
-        newParams.set(key, value as string);
-      } else {
-        newParams.delete(key);
-      }
-    });
-    
-    // URL 업데이트
-    setSearchParams(newParams);
-  }, [searchParams, setSearchParams]);
+  }, [filters, onFilterChange, searchParams, setSearchParams]);
 
   // 필터 초기화 함수
   const resetFilters = useCallback(() => {
@@ -115,18 +77,18 @@ export function FilterBar({ className, onFilterChange }: FilterBarProps) {
     console.log('필터 초기화');
     setFilters(defaultFilters);
     
-    // 콜백 호출
-    if (onFilterChange) {
-      console.log('필터 초기화 콜백 호출');
-      onFilterChange(defaultFilters);
-    }
-    
-    // URL 파라미터에서 필터 값 제거
+    // URL 파라미터 제거
     const newParams = new URLSearchParams(searchParams);
     Object.keys(defaultFilters).forEach(key => {
       newParams.delete(key);
     });
     setSearchParams(newParams);
+    
+    // 콜백 호출
+    if (onFilterChange) {
+      console.log('필터 초기화 콜백 호출');
+      onFilterChange(defaultFilters);
+    }
   }, [onFilterChange, searchParams, setSearchParams]);
 
   // 활성화된 필터가 있는지 확인

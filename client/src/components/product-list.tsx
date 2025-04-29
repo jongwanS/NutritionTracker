@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AllergyBadge } from "@/components/allergy-badge";
 import { Button } from "@/components/ui/button";
 import { Product } from "@/types";
-import { useSearchParams } from "@/hooks/use-search-params";
 import { useToast } from "@/hooks/use-toast";
 import { Heart, AlertCircle, Flame } from "lucide-react";
 
@@ -22,16 +20,25 @@ interface ProductListProps {
 
 export function ProductList({ franchiseId, initialFilters }: ProductListProps) {
   const [, navigate] = useLocation();
-  const [searchParams, setSearchParams] = useSearchParams();
   const [favoriteProducts, setFavoriteProducts] = useState<number[]>([]);
   const { toast } = useToast();
   
-  // initialFilters 로그
+  // 필터 값들 직접 가져오기
+  const calorieRange = initialFilters?.calorieRange || "0";
+  const proteinRange = initialFilters?.proteinRange || "0";
+  const carbsRange = initialFilters?.carbsRange || "0";
+  const fatRange = initialFilters?.fatRange || "0";
+  
+  // 개발 디버깅용 로그
   useEffect(() => {
-    if (initialFilters) {
-      console.log("초기 필터 값 수신:", initialFilters);
-    }
-  }, [initialFilters]);
+    console.log("ProductList 마운트 - 사용할 필터:", {
+      franchiseId,
+      calorieRange,
+      proteinRange,
+      carbsRange,
+      fatRange
+    });
+  }, [franchiseId, calorieRange, proteinRange, carbsRange, fatRange]);
   
   // 로컬 스토리지에서 좋아요 상태 로드
   useEffect(() => {
@@ -65,66 +72,6 @@ export function ProductList({ franchiseId, initialFilters }: ProductListProps) {
       window.removeEventListener('favoritesUpdated', handleStorageChange);
     };
   }, []);
-  
-  // 필터 값 가져오기 (초기 필터 또는 URL 파라미터)
-  // 초기 필터가 있으면 그 값을 우선 사용하고, 없으면 URL에서 가져옴
-  const calorieRange = initialFilters?.calorieRange || searchParams.get("calorieRange") || "";
-  const proteinRange = initialFilters?.proteinRange || searchParams.get("proteinRange") || "";
-  const carbsRange = initialFilters?.carbsRange || searchParams.get("carbsRange") || "";
-  const fatRange = initialFilters?.fatRange || searchParams.get("fatRange") || "";
-  
-  // URL에서 필터 파라미터 실시간 로그 (디버깅용)
-  console.log("현재 URL 필터 파라미터:", {
-    franchiseId, 
-    calorieRange: calorieRange || "없음", 
-    proteinRange: proteinRange || "없음", 
-    carbsRange: carbsRange || "없음", 
-    fatRange: fatRange || "없음"
-  });
-  
-  // Create query parameter string
-  const filterParams = new URLSearchParams();
-  filterParams.append("franchiseId", franchiseId.toString());
-  
-  if (calorieRange) filterParams.append("calorieRange", calorieRange);
-  if (proteinRange) filterParams.append("proteinRange", proteinRange);
-  if (carbsRange) filterParams.append("carbsRange", carbsRange);
-  if (fatRange) filterParams.append("fatRange", fatRange);
-  
-  // 컴포넌트 마운트 시 한번 로그 기록
-  useEffect(() => {
-    // 초기 필터가 있을 경우 로그 기록
-    console.log("ProductList 컴포넌트 마운트, 현재 필터:", {
-      franchiseId,
-      calorieRange: calorieRange || "없음",
-      proteinRange: proteinRange || "없음",
-      carbsRange: carbsRange || "없음",
-      fatRange: fatRange || "없음",
-      initialFilters: initialFilters ? "있음" : "없음"
-    });
-    
-    // URL에 필터가 있는 경우 searchParams에 직접 반영 (URL 우선 적용)
-    if (initialFilters) {
-      const hasActiveFilter = Object.values(initialFilters).some(value => value !== "0" && value !== "");
-      if (hasActiveFilter) {
-        console.log("초기 필터 값이 있어 URL 업데이트:", initialFilters);
-        const newParams = new URLSearchParams(searchParams);
-        
-        // 초기 필터 값을 URL 파라미터에 설정
-        Object.entries(initialFilters).forEach(([key, value]) => {
-          if (value && value !== "0") {
-            newParams.set(key, value);
-          }
-        });
-        
-        // URL 업데이트 (이 부분은 한 번만 실행되어야 함)
-        if (JSON.stringify(newParams) !== JSON.stringify(searchParams)) {
-          // URL 파라미터 업데이트
-          setSearchParams(newParams);
-        }
-      }
-    }
-  }, [franchiseId, initialFilters, searchParams, setSearchParams]);
 
   // Fetch products by franchise with filters
   const { data: products, isLoading, error } = useQuery({
@@ -132,7 +79,7 @@ export function ProductList({ franchiseId, initialFilters }: ProductListProps) {
     queryKey: ['/api/search', { franchiseId, calorieRange, proteinRange, carbsRange, fatRange }],
     queryFn: async () => {
       try {
-        // Use /api/search 엔드포인트로 모든 요청 처리 (필터 유무 관계없이)
+        // API 호출을 위한 파라미터 구성
         const params = new URLSearchParams();
         params.append("franchiseId", franchiseId.toString());
         
