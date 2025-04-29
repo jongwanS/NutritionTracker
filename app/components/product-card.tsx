@@ -66,29 +66,35 @@ export default function ProductCard({ product, listView = false }: ProductCardPr
       className="bg-white text-[7px] rounded border p-1 hover:shadow-sm cursor-pointer h-full flex flex-col"
       onClick={handleClick}
     >
-      <div className="overflow-hidden mb-1">
+      <div className="overflow-hidden mb-0.5">
         <p className="font-semibold truncate">{product.name}</p>
-        <p className="text-gray-500 truncate">{product.franchise}</p>
+        <p className="text-gray-400 truncate text-[6px]">{product.franchise}</p>
       </div>
       
-      <div className="text-[6px] border-t pt-0.5">
-        <div className="flex w-full justify-between">
-          <span>칼로리</span>
-          <span className="font-medium">{renderNutritionValue(product.calories)}kcal</span>
+      <div className="text-[6px] pt-0.5">
+        <div className="grid grid-cols-2 gap-0.5">
+          <div className="border-t border-gray-100 pt-0.5">
+            <div className="flex w-full justify-between">
+              <span>칼로리</span>
+              <span className="font-medium">{renderNutritionValue(product.calories)}kcal</span>
+            </div>
+            <div className="flex w-full justify-between">
+              <span>지방</span>
+              <span className="font-medium">{renderNutritionValue(product.fat)}g</span>
+            </div>
+          </div>
+          <div className="border-t border-gray-100 pt-0.5">
+            <div className="flex w-full justify-between">
+              <span>단백질</span>
+              <span className="font-medium">{renderNutritionValue(product.protein)}g</span>
+            </div>
+            <div className="flex w-full justify-between">
+              <span>탄수화물</span>
+              <span className="font-medium">{renderNutritionValue(product.carbs)}g</span>
+            </div>
+          </div>
         </div>
-        <div className="flex w-full justify-between">
-          <span>단백질</span>
-          <span className="font-medium">{renderNutritionValue(product.protein)}g</span>
-        </div>
-        <div className="flex w-full justify-between">
-          <span>탄수화물</span>
-          <span className="font-medium">{renderNutritionValue(product.carbs)}g</span>
-        </div>
-        <div className="flex w-full justify-between">
-          <span>지방</span>
-          <span className="font-medium">{renderNutritionValue(product.fat)}g</span>
-        </div>
-        <div className="text-center text-gray-400 mt-0.5">100g 당</div>
+        <div className="text-center text-[5px] text-gray-400 mt-0.5">100g 당</div>
       </div>
     </div>
   );
