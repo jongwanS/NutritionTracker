@@ -74,19 +74,7 @@ export default function FilterBar({ onFilterChange, initialFilters = {} }: Filte
 
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm mb-6 relative z-10">
-      <div 
-        className="w-full flex justify-between items-center cursor-pointer p-3 hover:bg-gray-50 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-pink-200"
-        onClick={toggleFilterPanel}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            toggleFilterPanel();
-          }
-        }}
-        role="button"
-        tabIndex={0}
-        aria-expanded={isExpanded}
-      >
+      <div className="flex justify-between items-center py-1">
         <div className="flex items-center">
           <h3 className="font-semibold text-gray-700">영양정보 필터</h3>
           {isFiltersApplied() && (
@@ -95,34 +83,24 @@ export default function FilterBar({ onFilterChange, initialFilters = {} }: Filte
             </span>
           )}
         </div>
-        <div className="flex items-center">
+        <div className="flex items-center gap-3">
           {isFiltersApplied() && (
             <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                resetFilters();
-              }}
-              className="text-xs text-pink-600 hover:text-pink-700 mr-3"
+              onClick={resetFilters}
+              className="text-xs text-pink-600 hover:text-pink-700 px-2.5 py-1.5 border border-pink-200 rounded-md"
             >
               초기화
             </button>
           )}
-          <div className="bg-pink-100 p-1.5 rounded-full">
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              width="16" 
-              height="16" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-              className={`transition-transform duration-200 ${isExpanded ? 'transform rotate-180' : ''}`}
-            >
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </div>
+          
+          <button 
+            onClick={toggleFilterPanel}
+            className={`px-3.5 py-1.5 rounded-md text-sm font-medium transition-colors ${isExpanded 
+              ? 'bg-pink-600 text-white hover:bg-pink-700' 
+              : 'bg-pink-100 text-pink-600 hover:bg-pink-200'}`}
+          >
+            {isExpanded ? '숨기기' : '필터 표시'}
+          </button>
         </div>
       </div>
       
