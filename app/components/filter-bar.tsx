@@ -68,14 +68,16 @@ export default function FilterBar({ onFilterChange, initialFilters = {} }: Filte
 
   // 필터 패널 토글
   const toggleFilterPanel = () => {
+    console.log('토글 클릭됨 - 현재 상태:', isExpanded, '-> 새 상태:', !isExpanded);
     setIsExpanded(!isExpanded);
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
+    <div className="bg-white p-4 rounded-lg shadow-sm mb-6 relative z-10">
       <div 
-        className="flex justify-between items-center cursor-pointer"
+        className="flex justify-between items-center cursor-pointer p-2 hover:bg-gray-50 rounded-md transition-colors"
         onClick={toggleFilterPanel}
+        aria-expanded={isExpanded}
       >
         <div className="flex items-center">
           <h3 className="font-semibold text-gray-700">영양정보 필터</h3>
@@ -97,20 +99,22 @@ export default function FilterBar({ onFilterChange, initialFilters = {} }: Filte
               초기화
             </button>
           )}
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            width="16" 
-            height="16" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-            className={`transition-transform duration-200 ${isExpanded ? 'transform rotate-180' : ''}`}
-          >
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
+          <div className="bg-gray-100 p-1.5 rounded-full">
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="16" 
+              height="16" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+              className={`transition-transform duration-200 ${isExpanded ? 'transform rotate-180' : ''}`}
+            >
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
         </div>
       </div>
       
