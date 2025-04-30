@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import FilterBar from './components/filter-bar';
 
 export default function Home() {
   const router = useRouter();
@@ -9,6 +10,14 @@ export default function Home() {
   const [franchises, setFranchises] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  
+  // 필터 상태 관리
+  const [filters, setFilters] = useState({
+    calorieRange: '0',
+    proteinRange: '0',
+    carbsRange: '0',
+    fatRange: '0'
+  });
 
   useEffect(() => {
     async function fetchInitialData() {
@@ -60,6 +69,24 @@ export default function Home() {
   const handleFranchiseClick = (franchiseId: number) => {
     router.push(`/franchises/${franchiseId}`);
   };
+  
+  // 필터 변경 핸들러
+  const handleFilterChange = (newFilters: any) => {
+    console.log('홈화면 필터 변경:', newFilters);
+    setFilters(newFilters);
+    
+    // URL 파라미터에 필터 추가
+    let filterParams = '';
+    Object.entries(newFilters).forEach(([key, value]) => {
+      if (value && value !== '0') {
+        filterParams += filterParams ? '&' : '?';
+        filterParams += `${key}=${encodeURIComponent(value as string)}`;
+      }
+    });
+    
+    // 이 시점에서는 필터링된 결과를 위한 API 호출이 필요 없습니다.
+    // 사용자가 검색을 클릭할 때 필터 파라미터를 추가합니다.
+  };
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -72,7 +99,7 @@ export default function Home() {
             한국 프랜차이즈 음식의 영양정보를 쉽게 검색하고 비교해보세요.
           </p>
           
-          <form onSubmit={handleSearch} className="flex w-full">
+          <form onSubmit={handleSearch} className="flex w-full mb-6">
             <input
               type="text"
               value={searchQuery}
@@ -87,6 +114,11 @@ export default function Home() {
               검색
             </button>
           </form>
+          
+          {/* 영양정보 필터 */}
+          <div className="mb-3">
+            <FilterBar onFilterChange={handleFilterChange} initialFilters={filters} />
+          </div>
         </div>
       </section>
       
