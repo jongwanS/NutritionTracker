@@ -124,13 +124,55 @@ export default function SearchResults() {
         </h1>
       </div>
       
+      {/* 모바일용 뷰 모드 전환 */}
+      <div className="mb-4 lg:hidden">
+        <div className="bg-white p-4 rounded-lg shadow-sm">
+          <div className="flex space-x-2">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`flex-1 py-2 rounded flex justify-center items-center ${
+                viewMode === 'grid' 
+                  ? 'bg-pink-100 text-pink-600' 
+                  : 'bg-gray-100 text-gray-600'
+              }`}
+              aria-label="바둑판식 보기"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`flex-1 py-2 rounded flex justify-center items-center ${
+                viewMode === 'list' 
+                  ? 'bg-pink-100 text-pink-600' 
+                  : 'bg-gray-100 text-gray-600'
+              }`}
+              aria-label="리스트식 보기"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="8" y1="6" x2="21" y2="6"></line>
+                <line x1="8" y1="12" x2="21" y2="12"></line>
+                <line x1="8" y1="18" x2="21" y2="18"></line>
+                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         {/* 왼쪽 필터 영역 */}
         <div className="lg:col-span-1">
           <FilterBar onFilterChange={handleFilterChange} initialFilters={filters} />
           
-          {/* 뷰 모드 전환 */}
-          <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
+          {/* 데스크톱용 뷰 모드 전환 (모바일에서는 숨김) */}
+          <div className="hidden lg:block bg-white p-4 rounded-lg shadow-sm mb-6">
             <h3 className="font-semibold text-gray-700 mb-3">보기 방식</h3>
             <div className="flex space-x-2">
               <button
