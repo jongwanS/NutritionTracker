@@ -75,8 +75,16 @@ export default function FilterBar({ onFilterChange, initialFilters = {} }: Filte
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm mb-6 relative z-10">
       <div 
-        className="flex justify-between items-center cursor-pointer p-2 hover:bg-gray-50 rounded-md transition-colors"
+        className="w-full flex justify-between items-center cursor-pointer p-3 hover:bg-gray-50 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-pink-200"
         onClick={toggleFilterPanel}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleFilterPanel();
+          }
+        }}
+        role="button"
+        tabIndex={0}
         aria-expanded={isExpanded}
       >
         <div className="flex items-center">
@@ -99,7 +107,7 @@ export default function FilterBar({ onFilterChange, initialFilters = {} }: Filte
               초기화
             </button>
           )}
-          <div className="bg-gray-100 p-1.5 rounded-full">
+          <div className="bg-pink-100 p-1.5 rounded-full">
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
               width="16" 
