@@ -71,7 +71,11 @@ export function FranchiseGrid({ categoryId }: FranchiseGridProps) {
               <ArrowRightCircle className="h-4 w-4 text-primary opacity-70" />
             </div>
             <div className="flex-grow flex items-center justify-center">
-              <h3 className="text-base font-heading font-semibold text-pink-700 text-center">{franchise.name}</h3>
+              <h3 className="text-base font-heading font-semibold text-pink-700 text-center">
+                {franchise.id === 72 ? "HY 잇츠온" : 
+                 franchise.id === 73 ? "신세계푸드 피코크" : 
+                 franchise.name}
+              </h3>
             </div>
           </div>
         </div>

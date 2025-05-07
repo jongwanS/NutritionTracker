@@ -58,6 +58,14 @@ export function ProductDetail({ productId }: ProductDetailProps) {
   
   // Get franchise and category names
   const getFranchiseName = (franchiseId: number) => {
+    // 특별 처리: ID 72는 "HY 잇츠온"으로 강제 매핑 (데이터 오류 수정)
+    if (franchiseId === 72) {
+      return "HY 잇츠온";
+    }
+    if (franchiseId === 73) {
+      return "신세계푸드 피코크";
+    }
+    
     if (!franchises) return "프랜차이즈";
     const franchise = franchises.find((f: any) => f.id === franchiseId);
     return franchise ? franchise.name : "프랜차이즈";

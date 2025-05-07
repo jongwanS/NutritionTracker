@@ -128,8 +128,16 @@ export default function Products({ params }: ProductsProps) {
     });
   }
   
+  // 특별 처리: 프랜차이즈 ID에 따른 이름 매핑 (데이터 오류 수정)
+  let franchiseName = franchiseLoading ? "로딩 중..." : franchise?.name || "프랜차이즈";
+  if (franchiseId === 72) {
+    franchiseName = "HY 잇츠온";
+  } else if (franchiseId === 73) {
+    franchiseName = "신세계푸드 피코크";
+  }
+  
   breadcrumbItems.push({
-    label: franchiseLoading ? "로딩 중..." : franchise?.name || "프랜차이즈",
+    label: franchiseName,
     path: `/franchise/${franchiseId}`,
     current: true
   });
@@ -144,7 +152,7 @@ export default function Products({ params }: ProductsProps) {
         {franchiseLoading ? (
           <Skeleton className="h-9 w-64" />
         ) : (
-          <>{franchise?.name || "프랜차이즈"} 메뉴</>
+          <>{franchiseName} 메뉴</>
         )}
       </h1>
       
