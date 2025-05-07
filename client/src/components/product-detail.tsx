@@ -58,12 +58,18 @@ export function ProductDetail({ productId }: ProductDetailProps) {
   
   // Get franchise and category names
   const getFranchiseName = (franchiseId: number) => {
-    // 특별 처리: ID 72는 "HY 잇츠온"으로 강제 매핑 (데이터 오류 수정)
+    // 특별 처리: 데이터 오류 수정을 위한 이름 매핑
     if (franchiseId === 72) {
       return "HY 잇츠온";
     }
     if (franchiseId === 73) {
       return "신세계푸드 피코크";
+    }
+    if (franchiseId === 27) {
+      return "7번가피자";
+    }
+    if (franchiseId === 28) {
+      return "피자나라치킨공주";
     }
     
     if (!franchises) return "프랜차이즈";
