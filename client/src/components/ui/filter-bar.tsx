@@ -3,8 +3,9 @@ import { useSearchParams } from "@/hooks/use-search-params";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, ChevronDown, ChevronUp, Filter } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface FilterBarProps {
   className?: string;
@@ -32,6 +33,9 @@ export function FilterBar({ className, onFilterChange }: FilterBarProps) {
     carbsRange: initialCarbsRange,
     fatRange: initialFatRange
   });
+  
+  // 필터 UI 표시 여부
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
   
   // 디버깅 로그
   console.log("FilterBar 렌더링 - 현재 필터:", filters);
@@ -105,11 +109,23 @@ export function FilterBar({ className, onFilterChange }: FilterBarProps) {
   // 활성화된 필터가 있는지 확인
   const hasActiveFilters = Object.values(filters).some(value => value !== "0" && value !== "");
 
+  // 활성화된 필터 개수
+  const activeFilterCount = Object.values(filters).filter(value => value !== "0" && value !== "").length;
+  
   return (
     <div className={cn("mb-8 bg-white p-4 rounded-lg shadow-md", className)}>
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+      {/* 헤더 부분 - 항상 표시 */}
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">
-          <h2 className="text-xl font-heading font-bold">필터</h2>
+          <h2 className="text-xl font-heading font-bold flex items-center">
+            <Filter className="h-5 w-5 mr-2 text-pink-500" />
+            필터
+            {activeFilterCount > 0 && (
+              <span className="ml-2 px-2 py-0.5 bg-pink-100 text-pink-700 text-xs rounded-full">
+                {activeFilterCount}
+              </span>
+            )}
+          </h2>
           
           {/* 필터 초기화 버튼 */}
           {hasActiveFilters && (
@@ -120,77 +136,136 @@ export function FilterBar({ className, onFilterChange }: FilterBarProps) {
               className="ml-3 text-xs text-pink-600 hover:text-pink-700 hover:bg-pink-50 border border-pink-100"
             >
               <RotateCcw className="h-3.5 w-3.5 mr-1" />
-              필터 초기화
+              초기화
             </Button>
           )}
         </div>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full md:w-auto">
-          {/* Calories Filter */}
-          <div className="flex flex-col w-full">
-            <div className="flex justify-between items-center mb-1">
-              <Label className="text-sm font-medium">칼로리</Label>
-              <span className="text-sm text-gray-500">{filters.calorieRange || 0} kcal 이하</span>
-            </div>
-            <Slider
-              defaultValue={[0]}
-              max={1000}
-              step={100}
-              value={[parseInt(filters.calorieRange) || 0]}
-              onValueChange={(value) => handleFilterChange(value[0].toString(), "calorieRange")}
-              className="mb-4"
-            />
-          </div>
-          
-          {/* Protein Filter */}
-          <div className="flex flex-col w-full">
-            <div className="flex justify-between items-center mb-1">
-              <Label className="text-sm font-medium">단백질</Label>
-              <span className="text-sm text-gray-500">{filters.proteinRange || 0}g 이상</span>
-            </div>
-            <Slider
-              defaultValue={[0]}
-              max={50}
-              step={5}
-              value={[parseInt(filters.proteinRange) || 0]}
-              onValueChange={(value) => handleFilterChange(value[0].toString(), "proteinRange")}
-              className="mb-4"
-            />
-          </div>
-          
-          {/* Carbs Filter */}
-          <div className="flex flex-col w-full">
-            <div className="flex justify-between items-center mb-1">
-              <Label className="text-sm font-medium">탄수화물</Label>
-              <span className="text-sm text-gray-500">{filters.carbsRange || 0}g 이하</span>
-            </div>
-            <Slider
-              defaultValue={[0]}
-              max={100}
-              step={10}
-              value={[parseInt(filters.carbsRange) || 0]}
-              onValueChange={(value) => handleFilterChange(value[0].toString(), "carbsRange")}
-              className="mb-4"
-            />
-          </div>
-          
-          {/* Fat Filter */}
-          <div className="flex flex-col w-full">
-            <div className="flex justify-between items-center mb-1">
-              <Label className="text-sm font-medium">지방</Label>
-              <span className="text-sm text-gray-500">{filters.fatRange || 0}g 이하</span>
-            </div>
-            <Slider
-              defaultValue={[0]}
-              max={50}
-              step={5}
-              value={[parseInt(filters.fatRange) || 0]}
-              onValueChange={(value) => handleFilterChange(value[0].toString(), "fatRange")}
-              className="mb-4"
-            />
-          </div>
-        </div>
+      
+        {/* 필터 토글 버튼 */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setIsFilterVisible(!isFilterVisible)}
+          className="text-pink-600 hover:text-pink-700 hover:bg-pink-50 border border-pink-100"
+        >
+          {isFilterVisible ? (
+            <>
+              <ChevronUp className="h-4 w-4 mr-1" />
+              필터 접기
+            </>
+          ) : (
+            <>
+              <ChevronDown className="h-4 w-4 mr-1" />
+              필터 펼치기
+            </>
+          )}
+        </Button>
       </div>
+        
+      {/* 필터 컨텐츠 - 접기/펼치기 */}
+      <AnimatePresence>
+        {isFilterVisible && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="overflow-hidden"
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+              {/* Calories Filter */}
+              <div className="flex flex-col w-full">
+                <div className="flex justify-between items-center mb-1">
+                  <Label className="text-sm font-medium">칼로리</Label>
+                  <span className="text-sm text-gray-500">{filters.calorieRange || 0} kcal 이하</span>
+                </div>
+                <Slider
+                  defaultValue={[0]}
+                  max={1000}
+                  step={100}
+                  value={[parseInt(filters.calorieRange) || 0]}
+                  onValueChange={(value) => handleFilterChange(value[0].toString(), "calorieRange")}
+                  className="mb-4"
+                />
+              </div>
+              
+              {/* Protein Filter */}
+              <div className="flex flex-col w-full">
+                <div className="flex justify-between items-center mb-1">
+                  <Label className="text-sm font-medium">단백질</Label>
+                  <span className="text-sm text-gray-500">{filters.proteinRange || 0}g 이상</span>
+                </div>
+                <Slider
+                  defaultValue={[0]}
+                  max={50}
+                  step={5}
+                  value={[parseInt(filters.proteinRange) || 0]}
+                  onValueChange={(value) => handleFilterChange(value[0].toString(), "proteinRange")}
+                  className="mb-4"
+                />
+              </div>
+              
+              {/* Carbs Filter */}
+              <div className="flex flex-col w-full">
+                <div className="flex justify-between items-center mb-1">
+                  <Label className="text-sm font-medium">탄수화물</Label>
+                  <span className="text-sm text-gray-500">{filters.carbsRange || 0}g 이하</span>
+                </div>
+                <Slider
+                  defaultValue={[0]}
+                  max={100}
+                  step={10}
+                  value={[parseInt(filters.carbsRange) || 0]}
+                  onValueChange={(value) => handleFilterChange(value[0].toString(), "carbsRange")}
+                  className="mb-4"
+                />
+              </div>
+              
+              {/* Fat Filter */}
+              <div className="flex flex-col w-full">
+                <div className="flex justify-between items-center mb-1">
+                  <Label className="text-sm font-medium">지방</Label>
+                  <span className="text-sm text-gray-500">{filters.fatRange || 0}g 이하</span>
+                </div>
+                <Slider
+                  defaultValue={[0]}
+                  max={50}
+                  step={5}
+                  value={[parseInt(filters.fatRange) || 0]}
+                  onValueChange={(value) => handleFilterChange(value[0].toString(), "fatRange")}
+                  className="mb-4"
+                />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
+      {/* 활성화된 필터 표시 (필터가 접혀있고, 활성화된 필터가 있을 때) */}
+      {!isFilterVisible && hasActiveFilters && (
+        <div className="flex flex-wrap gap-2 mt-2">
+          {parseInt(filters.calorieRange) > 0 && (
+            <div className="bg-pink-50 px-2 py-1 text-xs rounded-full text-pink-600 border border-pink-100">
+              칼로리 {filters.calorieRange}kcal 이하
+            </div>
+          )}
+          {parseInt(filters.proteinRange) > 0 && (
+            <div className="bg-pink-50 px-2 py-1 text-xs rounded-full text-pink-600 border border-pink-100">
+              단백질 {filters.proteinRange}g 이상
+            </div>
+          )}
+          {parseInt(filters.carbsRange) > 0 && (
+            <div className="bg-pink-50 px-2 py-1 text-xs rounded-full text-pink-600 border border-pink-100">
+              탄수화물 {filters.carbsRange}g 이하
+            </div>
+          )}
+          {parseInt(filters.fatRange) > 0 && (
+            <div className="bg-pink-50 px-2 py-1 text-xs rounded-full text-pink-600 border border-pink-100">
+              지방 {filters.fatRange}g 이하
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
