@@ -74,6 +74,8 @@ export function FranchiseGrid({ categoryId }: FranchiseGridProps) {
               <h3 className="text-base font-heading font-semibold text-pink-700 text-center">
                 {franchise.id === 72 ? "HY 잇츠온" : 
                  franchise.id === 73 ? "신세계푸드 피코크" : 
+                 franchise.id === 27 ? "7번가피자" : 
+                 franchise.id === 28 ? "피자나라치킨공주" : 
                  franchise.name}
               </h3>
             </div>

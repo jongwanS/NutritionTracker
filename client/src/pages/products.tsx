@@ -134,6 +134,10 @@ export default function Products({ params }: ProductsProps) {
     franchiseName = "HY 잇츠온";
   } else if (franchiseId === 73) {
     franchiseName = "신세계푸드 피코크";
+  } else if (franchiseId === 27) {
+    franchiseName = "7번가피자";
+  } else if (franchiseId === 28) {
+    franchiseName = "피자나라치킨공주";
   }
   
   breadcrumbItems.push({
