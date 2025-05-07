@@ -113,19 +113,29 @@ export function FilterBar({ className, onFilterChange }: FilterBarProps) {
   const activeFilterCount = Object.values(filters).filter(value => value !== "0" && value !== "").length;
   
   return (
-    <div className={cn("mb-6 bg-gradient-to-b from-white to-pink-50/30 p-4 rounded-xl shadow-lg border border-pink-100", className)}>
+    <div className={cn("mb-3 bg-gradient-to-b from-white to-pink-50/30 p-3 rounded-xl shadow-sm border border-pink-100", className)}>
       {/* 헤더 부분 - 항상 표시 */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between">
         <div className="flex items-center">
-          <h2 className="text-lg font-heading font-bold flex items-center gradient-text">
-            <Filter className="h-4 w-4 mr-1.5 text-pink-500" />
-            필터
+          <Button
+            variant="link"
+            size="sm"
+            onClick={() => setIsFilterVisible(!isFilterVisible)}
+            className="p-0 flex items-center text-pink-600 hover:text-pink-700 hover:no-underline"
+          >
+            <Filter className="h-3.5 w-3.5 mr-1" />
+            <span className="text-sm font-medium">필터</span>
+            {isFilterVisible ? (
+              <ChevronUp className="h-3 w-3 ml-1" />
+            ) : (
+              <ChevronDown className="h-3 w-3 ml-1" />
+            )}
             {activeFilterCount > 0 && (
-              <span className="ml-2 px-2 py-0.5 bg-gradient-to-r from-pink-500 to-pink-400 text-white text-xs rounded-full shadow-sm flex items-center justify-center min-w-[1.5rem]">
+              <span className="ml-1.5 px-1.5 py-0.5 bg-gradient-to-r from-pink-500 to-pink-400 text-white text-xs rounded-full shadow-sm flex items-center justify-center min-w-[1.25rem]">
                 {activeFilterCount}
               </span>
             )}
-          </h2>
+          </Button>
           
           {/* 필터 초기화 버튼 */}
           {hasActiveFilters && (
@@ -133,37 +143,13 @@ export function FilterBar({ className, onFilterChange }: FilterBarProps) {
               variant="ghost"
               size="sm"
               onClick={resetFilters}
-              className="ml-3 text-xs font-medium text-pink-600 hover:text-pink-700 hover:bg-pink-50/70 border border-pink-200 shadow-sm rounded-full px-2 py-1"
+              className="ml-2 text-xs font-medium text-pink-600 hover:text-pink-700 hover:bg-pink-50/70 border border-pink-200 shadow-sm rounded-full h-6 px-2"
             >
-              <RotateCcw className="h-3 w-3 mr-1" />
+              <RotateCcw className="h-2.5 w-2.5 mr-1" />
               초기화
             </Button>
           )}
         </div>
-      
-        {/* 필터 토글 버튼 */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setIsFilterVisible(!isFilterVisible)}
-          className={`text-pink-600 hover:text-pink-700 hover:bg-pink-50/70 border rounded-full px-3 py-1 shadow-sm transition-all duration-300 ${
-            isFilterVisible 
-              ? "bg-pink-100/50 border-pink-200" 
-              : "bg-white border-pink-100"
-          }`}
-        >
-          {isFilterVisible ? (
-            <>
-              <ChevronUp className="h-3.5 w-3.5 mr-1.5" />
-              접기
-            </>
-          ) : (
-            <>
-              <ChevronDown className="h-3.5 w-3.5 mr-1.5" />
-              펼치기
-            </>
-          )}
-        </Button>
       </div>
         
       {/* 필터 컨텐츠 - 접기/펼치기 */}
