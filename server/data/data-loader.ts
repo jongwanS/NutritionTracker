@@ -250,7 +250,17 @@ export async function loadProductData(): Promise<Product[]> {
         let categoryId = franchiseInfo.categoryId; // 기본값은 프랜차이즈 카테고리
         
         // 제품명이나 카테고리명에 따라 카테고리 자동 분류
-        if (productCategory.includes('버거') || 
+        // 간편조리세트 또는 밀키트 관련 제품은 최우선 분류
+        if (nameParts.length > 1 && nameParts[1] === '간편조리세트' || 
+            productCategory.includes('밀키트') || 
+            productName.toLowerCase().includes('밀키트') ||
+            productName.toLowerCase().includes('쿡킷') ||
+            franchiseName.includes('쿡킷') ||
+            franchiseName.includes('심플리쿡') ||
+            franchiseName.includes('잇츠온') ||
+            franchiseName.includes('피코크')) {
+          categoryId = 11; // 밀키트 카테고리
+        } else if (productCategory.includes('버거') || 
             productName.toLowerCase().includes('버거') || 
             productName.toLowerCase().includes('와퍼') ||
             productName.toLowerCase().includes('불고기') ||
@@ -316,14 +326,6 @@ export async function loadProductData(): Promise<Product[]> {
                   productName.toLowerCase().includes('와플') ||
                   productName.toLowerCase().includes('토스트')) {
           categoryId = 10; // 와플/토스트 카테고리
-        } else if (productCategory.includes('밀키트') || 
-                  productName.toLowerCase().includes('밀키트') ||
-                  productName.toLowerCase().includes('쿡킷') ||
-                  franchiseName.includes('쿡킷') ||
-                  franchiseName.includes('심플리쿡') ||
-                  franchiseName.includes('잇츠온') ||
-                  franchiseName.includes('피코크')) {
-          categoryId = 11; // 밀키트 카테고리
         } else if (productCategory.includes('스무디') || 
                   productCategory.includes('주스') ||
                   productName.toLowerCase().includes('스무디') ||
